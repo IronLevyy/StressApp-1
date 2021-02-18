@@ -6,36 +6,43 @@
     android:orientation="vertical"
     android:background="@drawable/shadow"
     android:padding="13dp">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Текущее значение"
-        android:textSize="16dp"
-        android:textColor="@color/black"
-        android:layout_gravity="center"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2387"
-        android:textSize="25dp"
-        android:layout_gravity="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Среднее значение"
-        android:textColor="@color/black"
-        android:textSize="16dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2387"
-        android:textSize="25dp"
-        android:layout_gravity="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"/>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Текущее значение"
+            android:textSize="17dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2387"
+            android:textSize="30dp"
+            android:layout_gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Среднее значение"
+            android:textColor="@color/black"
+            android:textSize="17dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2387"
+            android:textSize="30dp"
+            android:layout_gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -6,27 +6,47 @@
     android:orientation="vertical"
     android:background="@drawable/shadow"
     android:padding="13dp">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Количество пиков"
-        android:textSize="16dp"
-        android:textColor="@color/black"
-        android:layout_gravity="center"/>
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_show_chart_24"
-        android:layout_gravity="center"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="32"
-        android:textSize="25dp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:layout_gravity="center"/>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Количество пиков"
+                android:textSize="17dp"
+                android:textColor="@color/black"
+                android:layout_gravity="center"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_show_chart_24"
+                android:layout_gravity="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="32"
+                android:textSize="30dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1H"
+            android:layout_gravity="bottom|right"
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"/>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
 
 

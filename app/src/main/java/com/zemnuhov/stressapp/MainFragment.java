@@ -34,6 +34,7 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.main_fragment,container,false);
+        GlobalValues.getMainMenu().setVisible(false);
         pieChart=view.findViewById(R.id.pieChart);
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(34.0f, "Семья"));

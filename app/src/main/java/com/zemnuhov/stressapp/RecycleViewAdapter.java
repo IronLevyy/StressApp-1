@@ -32,6 +32,14 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public void onBindViewHolder( DeviceViewHolder holder, int position) {
         holder.deviceMAC.setText(devices.get(position).MAC);
         holder.nameDevice.setText(devices.get(position).Name);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GlobalValues.getFragmentManager().beginTransaction().
+                        replace(R.id.fragment_container,MainFragment.newInstance()).
+                        commit();
+            }
+        });
     }
 
     @Override
