@@ -1,6 +1,5 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.MainResurce;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,26 +15,29 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.zemnuhov.stressapp.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class MainFragment extends Fragment {
+public class StatisticLayout extends Fragment {
 
-    PieChart pieChart;
+    private PieChart pieChart;
 
-    public static MainFragment newInstance() {
-        MainFragment fragment = new MainFragment();
+    public static StatisticLayout newInstance() {
+        StatisticLayout fragment = new StatisticLayout();
         return fragment;
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.main_fragment,container,false);
-        GlobalValues.getMainMenu().setVisible(false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.stat_lable,container,false);
         pieChart=view.findViewById(R.id.pieChart);
+        statLayout();
+        return view;
+    }
+    private void statLayout(){
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(34.0f, "Семья"));
         entries.add(new PieEntry(11.0f, "Работа"));
@@ -57,8 +59,5 @@ public class MainFragment extends Fragment {
         pieChart.setDrawSliceText(false);
         pieChart.getLegend().setEnabled(false);
         pieChart.invalidate();
-
-
-        return view;
     }
 }

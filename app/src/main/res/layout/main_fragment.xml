@@ -8,15 +8,12 @@
         android:orientation="vertical"
         android:background="#EAEAEA">
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/graph_fragment_in_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/shadow"
             android:layout_margin="16dp">
-            <com.jjoe64.graphview.GraphView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"/>
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <GridLayout
@@ -26,25 +23,25 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            android:rowCount="3"
+            android:rowCount="2"
             android:columnCount="2">
-            <include layout="@layout/avg_current_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/current_and_avg_layout"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="5dp"/>
-            <include layout="@layout/number_of_peaks"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/peaks_layout"
+
+
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="5dp" />
-            <include layout="@layout/stat_lable"
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/statistic_layout"
+
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="4"
                 android:layout_marginRight="5dp"

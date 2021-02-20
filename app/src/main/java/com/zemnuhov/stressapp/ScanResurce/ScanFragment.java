@@ -1,4 +1,4 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.ScanResurce;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -11,12 +11,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,7 +91,7 @@ public class ScanFragment extends Fragment {
                 RecycleViewAdapter recycleViewAdapter = new RecycleViewAdapter(temp);
                 recyclerView.setAdapter(recycleViewAdapter);
                 scanLeDevice();
-                swipe.setRefreshing(false);
+
             }
         });
         GlobalValues.getMainMenu().setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -126,6 +127,7 @@ public class ScanFragment extends Fragment {
                 public void run() {
                     mScanning = false;
                     bluetoothLeScanner.stopScan(leScanCallback);
+                    swipe.setRefreshing(false);
                 }
             }, SCAN_PERIOD);
 

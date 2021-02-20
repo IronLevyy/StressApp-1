@@ -1,4 +1,4 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.ScanResurce;
 
 public class Device {
     String MAC;

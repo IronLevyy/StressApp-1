@@ -1,16 +1,17 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.ScanResurce;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.MainResurce.MainFragment;
+import com.zemnuhov.stressapp.R;
+
 import java.util.List;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.DeviceViewHolder> {
@@ -36,7 +37,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             @Override
             public void onClick(View v) {
                 GlobalValues.getFragmentManager().beginTransaction().
-                        replace(R.id.fragment_container,MainFragment.newInstance()).
+                        replace(R.id.fragment_container, MainFragment.newInstance(devices.get(position).MAC)).
                         commit();
             }
         });
