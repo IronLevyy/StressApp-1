@@ -37,9 +37,10 @@
                 android:layout_gravity="center"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1H"
+            android:id="@+id/time_range"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:gravity="bottom|right"
             android:layout_gravity="bottom|right"
             android:textColor="@color/black"
             android:textSize="15dp"

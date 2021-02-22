@@ -2,6 +2,7 @@ package com.zemnuhov.stressapp.MainResurce;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +28,16 @@ import java.util.List;
 public class MainFragment extends Fragment implements BleServiceAdapter.CallBack {
 
 
-    private String addressDevice;
     private BleServiceAdapter bleServiceAdapter;
     private GraphLayout graphLayout;
     private CurrentAndAvgLayout currentAndAvgLayout;
     private PeaksLayout peaksLayout;
     private StatisticLayout statisticLayout;
+    private String adressDevice;
 
     public static MainFragment newInstance(String addressDevice) {
         MainFragment fragment = new MainFragment();
-        fragment.addressDevice=addressDevice;
+        fragment.adressDevice=addressDevice;
         return fragment;
     }
 
@@ -67,13 +68,15 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
 
 
 
+
         return view;
     }
 
     private void init(){
         initItem();
-        bleServiceAdapter=new BleServiceAdapter(addressDevice);
+        bleServiceAdapter=new BleServiceAdapter(adressDevice);
         bleServiceAdapter.registerCallBack(this::callingBack);
+
     }
 
 
@@ -81,5 +84,18 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
     public void callingBack(Double valuePhasic, Double valueTonic) {
         graphLayout.addLineSeriesValue(valuePhasic);
         currentAndAvgLayout.setCurrentValue(valueTonic);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        bleServiceAdapter.disconnectedService();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        bleServiceAdapter.connectedService();
     }
 }

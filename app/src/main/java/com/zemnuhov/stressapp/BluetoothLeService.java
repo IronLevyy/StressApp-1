@@ -1,5 +1,7 @@
 package com.zemnuhov.stressapp;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,14 +14,14 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+
 import java.util.List;
-import java.util.UUID;
 
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
@@ -104,7 +106,7 @@ public class BluetoothLeService extends Service {
             double value=(Double.parseDouble(dataString)/1023) * 10000;
 
             intent.putExtra(BluetoothLeService.EXTRA_DATA,value);
-            //Log.i("Value:",dataString);
+            Log.i("Value:",String.valueOf(value));
         }
         sendBroadcast(intent);
     }
@@ -126,7 +128,14 @@ public class BluetoothLeService extends Service {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
+        //Log.i("connectionService","connected");
         return binder;
     }
 

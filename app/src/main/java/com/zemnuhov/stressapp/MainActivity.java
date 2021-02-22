@@ -14,9 +14,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.zemnuhov.stressapp.MainResurce.MainFragment;
 import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter bluetoothAdapter;
@@ -46,13 +47,17 @@ public class MainActivity extends AppCompatActivity {
                     1);
         }
 
+
     }
 
 
     private void startProgramm(){
+
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.fragment_container, ScanFragment.newInstance()).
                 commit();
+
+
     }
 
     @Override

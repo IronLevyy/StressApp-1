@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -30,6 +31,7 @@ public class BleServiceAdapter {
     private ArrayList<Double> filterArray;
     private ArrayList<Double> helpPhasicArray;
     private ArrayList<Double> clearDataArray;
+    private Intent gattServiceIntent;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -51,6 +53,7 @@ public class BleServiceAdapter {
         }
     };
 
+
     public interface CallBack{
         void callingBack(Double valuePhasic, Double valueTonic);
     }
@@ -61,9 +64,6 @@ public class BleServiceAdapter {
 
     public BleServiceAdapter(String addressDevice){
         this.addressDevice=addressDevice;
-        Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
-        context.bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
-        context.registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
     private static IntentFilter makeGattUpdateIntentFilter() {
@@ -154,5 +154,17 @@ public class BleServiceAdapter {
             result+=item;
         }
         return result/list.size();
+    }
+
+    public void disconnectedService(){
+        context.unbindService(serviceConnection);
+        context.unregisterReceiver(gattUpdateReceiver);
+
+    }
+
+    public void connectedService(){
+        gattServiceIntent = new Intent(context, BluetoothLeService.class);
+        context.bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
+        context.registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 }

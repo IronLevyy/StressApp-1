@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zemnuhov.stressapp.BleServiceAdapter;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.MainResurce.MainFragment;
 import com.zemnuhov.stressapp.R;
