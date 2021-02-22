@@ -33,6 +33,24 @@ public class BleServiceAdapter {
     private ArrayList<Double> clearDataArray;
     private Intent gattServiceIntent;
 
+
+    public interface CallBack{
+        void callingBack(Double valuePhasic, Double valueTonic);
+
+    }
+
+    public void registerCallBack(CallBack callback){
+        this.callback = callback;
+    }
+
+    public BleServiceAdapter(String addressDevice){
+        this.addressDevice=addressDevice;
+        filterArray=new ArrayList<>();
+        helpPhasicArray=new ArrayList<>();
+        clearDataArray=new ArrayList<>();
+
+    }
+
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
@@ -53,17 +71,8 @@ public class BleServiceAdapter {
         }
     };
 
-
-    public interface CallBack{
-        void callingBack(Double valuePhasic, Double valueTonic);
-    }
-
-    public void registerCallBack(CallBack callback){
-        this.callback = callback;
-    }
-
-    public BleServiceAdapter(String addressDevice){
-        this.addressDevice=addressDevice;
+    public Boolean getConnectedDevice(){
+        return connectedDevice;
     }
 
     private static IntentFilter makeGattUpdateIntentFilter() {
@@ -81,16 +90,13 @@ public class BleServiceAdapter {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 connectedDevice = true;
-                filterArray=new ArrayList<>();
-                helpPhasicArray=new ArrayList<>();
-                clearDataArray=new ArrayList<>();
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 connectedDevice = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 getServices(bluetoothLeService.getSupportedGattServices());
                 setCharacteristic();
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                //System.out.println(intent.getDoubleExtra(BluetoothLeService.EXTRA_DATA,0));
+                connectedDevice = true;
                 Double value=intent.getDoubleExtra(BluetoothLeService.EXTRA_DATA,0);
                 Double rezultPhasic=filterData(value);
                 if(rezultPhasic!=null){
@@ -164,6 +170,11 @@ public class BleServiceAdapter {
 
     public void connectedService(){
         gattServiceIntent = new Intent(context, BluetoothLeService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(gattServiceIntent);
+        }else{
+            context.startService(gattServiceIntent);
+        }
         context.bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
         context.registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
     }

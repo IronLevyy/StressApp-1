@@ -130,7 +130,10 @@ public class BluetoothLeService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        NotificationClass notification=new NotificationClass();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForeground(100,notification.getNotification());
+        }
     }
 
     @Override

@@ -52,10 +52,15 @@ public class MainActivity extends AppCompatActivity{
 
 
     private void startProgramm(){
-
-        getSupportFragmentManager().beginTransaction().
-                replace(R.id.fragment_container, ScanFragment.newInstance()).
-                commit();
+        if(GlobalValues.loadDeviceAddr().equals("0")) {
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.fragment_container, ScanFragment.newInstance()).
+                    commit();
+        }else {
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.fragment_container, MainFragment.newInstance(GlobalValues.loadDeviceAddr())).
+                    commit();
+        }
 
 
     }

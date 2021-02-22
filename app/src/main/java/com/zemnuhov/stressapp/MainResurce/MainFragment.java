@@ -2,6 +2,7 @@ package com.zemnuhov.stressapp.MainResurce;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import com.zemnuhov.stressapp.BleServiceAdapter;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
+import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
     private PeaksLayout peaksLayout;
     private StatisticLayout statisticLayout;
     private String adressDevice;
+    private Handler handler = new Handler();
 
     public static MainFragment newInstance(String addressDevice) {
         MainFragment fragment = new MainFragment();
@@ -66,9 +69,6 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
         GlobalValues.getMainMenu().setVisible(false);
         init();
 
-
-
-
         return view;
     }
 
@@ -76,6 +76,18 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
         initItem();
         bleServiceAdapter=new BleServiceAdapter(adressDevice);
         bleServiceAdapter.registerCallBack(this::callingBack);
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(!bleServiceAdapter.getConnectedDevice()){
+                    GlobalValues.getFragmentManager().beginTransaction().
+                            replace(R.id.fragment_container, ScanFragment.newInstance()).
+                            commit();
+                }
+            }
+        });
+        handler.postDelayed(thread,5000);
+
 
     }
 
