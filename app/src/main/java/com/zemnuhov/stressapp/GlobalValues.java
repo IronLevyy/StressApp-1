@@ -46,13 +46,11 @@ public class GlobalValues {
           SharedPreferences.Editor ed = sPref.edit();
           ed.putString(SAVED_TAG, device);
           ed.commit();
-          Toast.makeText(context, "Device saved", Toast.LENGTH_SHORT).show();
      }
 
      public static String loadDeviceAddr() {
           sPref = context.getSharedPreferences(SAVED_TAG, MODE_PRIVATE);
           deviceAddr =  sPref.getString(SAVED_TAG, "0");
-          Toast.makeText(context, "Load Device "+deviceAddr, Toast.LENGTH_SHORT).show();
           return deviceAddr;
      }
 }

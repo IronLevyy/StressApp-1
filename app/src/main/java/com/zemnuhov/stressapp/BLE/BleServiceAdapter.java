@@ -1,4 +1,4 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.BLE;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -8,10 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.zemnuhov.stressapp.BLE.BluetoothLeService;
+import com.zemnuhov.stressapp.GlobalValues;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +30,12 @@ public class BleServiceAdapter {
     private BluetoothGattCharacteristic characteristic;
     private BluetoothGattCharacteristic notifyCharacteristic;
     private CallBack callback;
-    private ArrayList<Double> filterArray;
-    private ArrayList<Double> helpPhasicArray;
-    private ArrayList<Double> clearDataArray;
+
     private Intent gattServiceIntent;
 
 
     public interface CallBack{
-        void callingBack(Double valuePhasic, Double valueTonic);
+        void callingBack(Double valuePhasic, Double valueTonic,Long time);
 
     }
 
@@ -45,9 +45,7 @@ public class BleServiceAdapter {
 
     public BleServiceAdapter(String addressDevice){
         this.addressDevice=addressDevice;
-        filterArray=new ArrayList<>();
-        helpPhasicArray=new ArrayList<>();
-        clearDataArray=new ArrayList<>();
+
 
     }
 
@@ -97,10 +95,11 @@ public class BleServiceAdapter {
                 setCharacteristic();
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 connectedDevice = true;
-                Double value=intent.getDoubleExtra(BluetoothLeService.EXTRA_DATA,0);
-                Double rezultPhasic=filterData(value);
+                Double value=intent.getDoubleExtra(BluetoothLeService.CLEAR_DATA,0);
+                Double rezultPhasic=intent.getDoubleExtra(BluetoothLeService.PHASIC_DATA,-1000);
+                Long time=intent.getLongExtra(BluetoothLeService.NOW_TIME,0);
                 if(rezultPhasic!=null){
-                    callback.callingBack(rezultPhasic,value);
+                    callback.callingBack(rezultPhasic,value,time);
                 }
 
             }
@@ -133,34 +132,7 @@ public class BleServiceAdapter {
         }
     }
 
-    private Double filterData(Double value){
-        if(clearDataArray.size()<20){
-            clearDataArray.add(value);
-        }
-        else {
-            if (helpPhasicArray.size() < 2) {
-                helpPhasicArray.add(avgList(clearDataArray));
-            } else {
-                filterArray.add((helpPhasicArray.get(1) - helpPhasicArray.get(0)) / 4);
-                helpPhasicArray.remove(0);
-                if (filterArray.size() > 20) {
-                    Double rezult = avgList(filterArray);
-                    filterArray.remove(0);
-                    return rezult;
-                }
-            }
-            clearDataArray.remove(0);
-        }
-        return null;
-    }
 
-    public Double avgList(ArrayList<Double> list){
-        double result = 0;
-        for(double item:list){
-            result+=item;
-        }
-        return result/list.size();
-    }
 
     public void disconnectedService(){
         context.unbindService(serviceConnection);

@@ -1,4 +1,4 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.BLE;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -10,6 +10,9 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;

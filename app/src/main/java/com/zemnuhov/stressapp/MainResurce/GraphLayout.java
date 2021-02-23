@@ -16,6 +16,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.PointsGraphSeries;
 import com.zemnuhov.stressapp.R;
 
 import java.util.Calendar;
@@ -24,6 +25,7 @@ import java.util.Date;
 public class GraphLayout extends Fragment {
     private GraphView mainGraph;
     private final LineGraphSeries<DataPoint> seriesNormal = new LineGraphSeries<>(new DataPoint[]{});
+    private final PointsGraphSeries<DataPoint> seriesPeaks = new PointsGraphSeries<>(new DataPoint[]{});
     private Integer i=0;
 
     public static GraphLayout newInstance() {
@@ -37,6 +39,8 @@ public class GraphLayout extends Fragment {
 
     private void init(){
         mainGraph.addSeries(seriesNormal);
+        mainGraph.addSeries(seriesPeaks);
+
         mainGraph.getViewport().setYAxisBoundsManual(true);
         mainGraph.getViewport().setXAxisBoundsManual(false);
         mainGraph.getViewport().setMinY(-3);
@@ -57,12 +61,18 @@ public class GraphLayout extends Fragment {
         mainGraph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
         mainGraph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
+        seriesPeaks.setColor(Color.RED);
+        seriesPeaks.setSize(3);
+
+        seriesNormal.setColor(Color.BLACK);
+
     }
 
-    public void addLineSeriesValue(Double value){
+    public void addLineSeriesValue(Double value,Long time){
         System.out.println(value);
-        Calendar calendar = Calendar.getInstance();
-        Date time = calendar.getTime();
+        if(value>0.7){
+            seriesPeaks.appendData(new DataPoint(time,value),true,1000000);
+        }
         seriesNormal.appendData(new DataPoint(time,value),true,1000000);
 
     }

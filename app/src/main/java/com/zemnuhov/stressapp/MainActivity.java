@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    private void startProgramm(){
+    private void startProgram(){
         if(GlobalValues.loadDeviceAddr().equals("0")) {
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.fragment_container, ScanFragment.newInstance()).
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity{
         getMenuInflater().inflate(R.menu.menu,menu);
         refreshButtonMenu =menu.findItem(R.id.menu_refresh);
         GlobalValues.setMainMenu(refreshButtonMenu);
-        startProgramm();
+        startProgram();
         return super.onCreateOptionsMenu(menu);
     }
 }

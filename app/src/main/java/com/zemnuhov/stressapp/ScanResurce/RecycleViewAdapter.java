@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zemnuhov.stressapp.BleServiceAdapter;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.MainResurce.MainFragment;
 import com.zemnuhov.stressapp.R;
@@ -40,6 +39,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
                 GlobalValues.getFragmentManager().beginTransaction().
                         replace(R.id.fragment_container, MainFragment.newInstance(devices.get(position).MAC)).
                         commit();
+                GlobalValues.saveDevice(devices.get(position).MAC);
             }
         });
     }

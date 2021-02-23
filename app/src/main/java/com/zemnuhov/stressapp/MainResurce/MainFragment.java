@@ -1,31 +1,18 @@
 package com.zemnuhov.stressapp.MainResurce;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
+import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
-import com.zemnuhov.stressapp.BleServiceAdapter;
+import com.zemnuhov.stressapp.BLE.BleServiceAdapter;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
 import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainFragment extends Fragment implements BleServiceAdapter.CallBack {
 
@@ -35,12 +22,12 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
     private CurrentAndAvgLayout currentAndAvgLayout;
     private PeaksLayout peaksLayout;
     private StatisticLayout statisticLayout;
-    private String adressDevice;
+    private String addressDevice;
     private Handler handler = new Handler();
 
     public static MainFragment newInstance(String addressDevice) {
         MainFragment fragment = new MainFragment();
-        fragment.adressDevice=addressDevice;
+        fragment.addressDevice =addressDevice;
         return fragment;
     }
 
@@ -74,7 +61,7 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
 
     private void init(){
         initItem();
-        bleServiceAdapter=new BleServiceAdapter(adressDevice);
+        bleServiceAdapter=new BleServiceAdapter(addressDevice);
         bleServiceAdapter.registerCallBack(this::callingBack);
         Thread thread=new Thread(new Runnable() {
             @Override
@@ -83,6 +70,10 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
                     GlobalValues.getFragmentManager().beginTransaction().
                             replace(R.id.fragment_container, ScanFragment.newInstance()).
                             commit();
+                    Toast.makeText(getContext(),
+                            "Подключение не удалось.\nПроверьте включено ли устройство.",
+                            Toast.LENGTH_LONG).show();
+
                 }
             }
         });
@@ -93,8 +84,10 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
 
 
     @Override
-    public void callingBack(Double valuePhasic, Double valueTonic) {
-        graphLayout.addLineSeriesValue(valuePhasic);
+    public void callingBack(Double valuePhasic, Double valueTonic, Long time) {
+        if(valuePhasic!=-1000 && time!=0) {
+            graphLayout.addLineSeriesValue(valuePhasic,time);
+        }
         currentAndAvgLayout.setCurrentValue(valueTonic);
     }
 

@@ -1,7 +1,5 @@
-package com.zemnuhov.stressapp;
+package com.zemnuhov.stressapp.BLE;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -18,9 +16,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class BluetoothLeService extends Service {
@@ -30,6 +27,7 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter bluetoothAdapter;
     private String bluetoothDeviceAddress;
     private BluetoothGatt bluetoothGatt;
+    private DataTransform dataTransform;
     private int connectionState = STATE_DISCONNECTED;
 
     private static final int STATE_DISCONNECTED = 0;
@@ -44,8 +42,12 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA =
-            "com.example.bluetooth.le.EXTRA_DATA";
+    public final static String CLEAR_DATA =
+            "com.example.bluetooth.le.CLEAR_DATA";
+    public final static String PHASIC_DATA =
+            "com.example.bluetooth.le.PHASIC_DATA";
+    public final static String NOW_TIME =
+            "com.example.bluetooth.le.NOW_TIME";
 
     IBinder binder=new LocalBinder();
 
@@ -105,7 +107,11 @@ public class BluetoothLeService extends Service {
 
             double value=(Double.parseDouble(dataString)/1023) * 10000;
 
-            intent.putExtra(BluetoothLeService.EXTRA_DATA,value);
+            intent.putExtra(BluetoothLeService.CLEAR_DATA,value);
+            intent.putExtra(BluetoothLeService.PHASIC_DATA,dataTransform.filterData(value));
+            Calendar calendar = Calendar.getInstance();
+            Date time = calendar.getTime();
+            intent.putExtra(BluetoothLeService.NOW_TIME,time.getTime());
             Log.i("Value:",String.valueOf(value));
         }
         sendBroadcast(intent);
@@ -130,6 +136,7 @@ public class BluetoothLeService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        dataTransform=new DataTransform();
         NotificationClass notification=new NotificationClass();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForeground(100,notification.getNotification());

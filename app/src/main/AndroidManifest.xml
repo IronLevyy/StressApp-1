@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StressApp">
         <service
-            android:name=".BluetoothLeService"
+            android:name=".BLE.BluetoothLeService"
             android:enabled="true"
             android:exported="true"></service>
 
