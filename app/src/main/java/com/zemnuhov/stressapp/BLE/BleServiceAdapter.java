@@ -35,7 +35,8 @@ public class BleServiceAdapter {
 
 
     public interface CallBack{
-        void callingBack(Double valuePhasic, Double valueTonic,Long time);
+        void callingBack(Double valuePhasic, Double valueTonic,Long time,
+                         Boolean isPeaks,Boolean isTonic);
 
     }
 
@@ -98,8 +99,10 @@ public class BleServiceAdapter {
                 Double value=intent.getDoubleExtra(BluetoothLeService.CLEAR_DATA,0);
                 Double rezultPhasic=intent.getDoubleExtra(BluetoothLeService.PHASIC_DATA,-1000);
                 Long time=intent.getLongExtra(BluetoothLeService.NOW_TIME,0);
+                Boolean isPeaks=intent.getBooleanExtra(BluetoothLeService.IS_PEAKS,false);
+                Boolean isTonic=intent.getBooleanExtra(BluetoothLeService.IS_TONIC,false);
                 if(rezultPhasic!=null){
-                    callback.callingBack(rezultPhasic,value,time);
+                    callback.callingBack(rezultPhasic,value,time,isPeaks,isTonic);
                 }
 
             }

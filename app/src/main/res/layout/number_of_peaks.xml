@@ -28,9 +28,10 @@
                 android:layout_gravity="center"
                 />
             <TextView
+                android:id="@+id/peaks_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="32"
+                android:text="0"
                 android:textSize="30dp"
                 android:textColor="@color/black"
                 android:textStyle="bold"

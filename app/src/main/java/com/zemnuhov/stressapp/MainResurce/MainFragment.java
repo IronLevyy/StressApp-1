@@ -84,9 +84,16 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
 
 
     @Override
-    public void callingBack(Double valuePhasic, Double valueTonic, Long time) {
+    public void callingBack(Double valuePhasic, Double valueTonic,
+                            Long time,Boolean isPeaks,Boolean isTonic) {
         if(valuePhasic!=-1000 && time!=0) {
             graphLayout.addLineSeriesValue(valuePhasic,time);
+        }
+        if(isPeaks){
+            peaksLayout.refreshPeaks();
+        }
+        if(isTonic){
+            currentAndAvgLayout.refreshAvg();
         }
         currentAndAvgLayout.setCurrentValue(valueTonic);
     }

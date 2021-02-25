@@ -16,8 +16,17 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.zemnuhov.stressapp.DataBase.RecodingPeaksDB;
+import com.zemnuhov.stressapp.DataBase.RecodingTonicDB;
+import com.zemnuhov.stressapp.DataBase.ResultDB;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class BluetoothLeService extends Service {
@@ -29,6 +38,11 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt bluetoothGatt;
     private DataTransform dataTransform;
     private int connectionState = STATE_DISCONNECTED;
+    private Boolean peaksFlag=false;
+    private HashMap<Long,Double> peaksArray;
+    private RecodingPeaksDB recodingPeaksDB;
+    private RecodingTonicDB recodingTonicDB;
+    private Long lastRecodingTonic;
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -48,6 +62,10 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.PHASIC_DATA";
     public final static String NOW_TIME =
             "com.example.bluetooth.le.NOW_TIME";
+    public final static String IS_PEAKS =
+            "com.example.bluetooth.le.IS_PEAKS";
+    public final static String IS_TONIC =
+            "com.example.bluetooth.le.IS_TONIC";
 
     IBinder binder=new LocalBinder();
 
@@ -102,19 +120,63 @@ public class BluetoothLeService extends Service {
     private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
         final byte[] data = characteristic.getValue();
+        Calendar calendar = Calendar.getInstance();
+        Date time = calendar.getTime();
         if (data != null && data.length > 0) {
             String dataString=new String(data);
 
             double value=(Double.parseDouble(dataString)/1023) * 10000;
-
             intent.putExtra(BluetoothLeService.CLEAR_DATA,value);
-            intent.putExtra(BluetoothLeService.PHASIC_DATA,dataTransform.filterData(value));
-            Calendar calendar = Calendar.getInstance();
-            Date time = calendar.getTime();
+            Double phasicValue=dataTransform.filterData(value);
+            intent.putExtra(BluetoothLeService.PHASIC_DATA,phasicValue);
+
             intent.putExtra(BluetoothLeService.NOW_TIME,time.getTime());
+            if(value>100) {
+                if (phasicValue != null) {
+                    peaksCounter(intent, phasicValue, time.getTime());
+                }
+                if (time.getTime() - lastRecodingTonic > 30000) {
+                    lastRecodingTonic = time.getTime();
+                    recodingTonicDB.addToDB(time.getTime(), value);//Добавление тоники.
+                    intent.putExtra(BluetoothLeService.IS_TONIC, true);
+                }
+            }
             Log.i("Value:",String.valueOf(value));
         }
         sendBroadcast(intent);
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat("HH:mm");
+        Log.i("Calendar",String.valueOf(formatForDateNow.format(time)));
+        if(formatForDateNow.format(time).equals("23:59")){
+            ResultDB resultDB=new ResultDB();
+            resultDB.addToDB();
+        }
+        if(formatForDateNow.format(time).equals("00:00")){
+            recodingTonicDB.clearDB();
+            recodingPeaksDB.clearDB();
+        }
+    }
+
+    private void peaksCounter(Intent intent,Double value,Long time){
+        if(value>0.7){
+            if(!peaksFlag){
+                peaksFlag=true;
+                peaksArray.clear();
+            }else {
+                peaksArray.put(time,value);
+            }
+        }else {
+            if(peaksFlag) {
+                Double max = Collections.max(peaksArray.values());//Амплитуда пика
+                ArrayList<Long> keys=new ArrayList(Arrays.asList(peaksArray.keySet().toArray()));
+                Long timePeaks=keys.get((int)(peaksArray.size()/2));
+                recodingPeaksDB.addToDB(timePeaks,max);
+                peaksFlag = false;
+                intent.putExtra(BluetoothLeService.IS_PEAKS, true);
+            }else {
+                intent.putExtra(BluetoothLeService.IS_PEAKS, false);
+            }
+        }
+
     }
 
     @Override
@@ -137,6 +199,10 @@ public class BluetoothLeService extends Service {
     public void onCreate() {
         super.onCreate();
         dataTransform=new DataTransform();
+        peaksArray=new HashMap<>();
+        recodingPeaksDB =new RecodingPeaksDB();
+        recodingTonicDB=new RecodingTonicDB();
+        lastRecodingTonic=0L;
         NotificationClass notification=new NotificationClass();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForeground(100,notification.getNotification());

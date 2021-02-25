@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.zemnuhov.stressapp.DataBase.RecodingPeaksDB;
 import com.zemnuhov.stressapp.R;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class PeaksLayout extends Fragment {
 
     private TextView timeRange;
     private final ArrayList<String> timesRanges=new ArrayList<>(Arrays.asList("10M","1H","1D"));
+    private final ArrayList<Long> timesRangesMillisecond=new ArrayList(Arrays.asList(600000L,3600000L,86400000L));
+    private TextView peaksCounter;
+    private RecodingPeaksDB recodingPeaksDB;
 
     public static PeaksLayout newInstance() {
         PeaksLayout fragment = new PeaksLayout();
@@ -28,6 +32,10 @@ public class PeaksLayout extends Fragment {
     private void init(View view){
         timeRange=view.findViewById(R.id.time_range);
         timeRange.setText(timesRanges.get(0));
+
+        peaksCounter=view.findViewById(R.id.peaks_counter);
+
+        recodingPeaksDB =new RecodingPeaksDB();
     }
 
     @Nullable
@@ -35,6 +43,7 @@ public class PeaksLayout extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.number_of_peaks,container,false);
         init(view);
+        refreshPeaks();
 
         timeRange.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,9 +54,18 @@ public class PeaksLayout extends Fragment {
                 }else {
                     timeRange.setText(timesRanges.get(0));
                 }
+                refreshPeaks();
             }
         });
         return view;
     }
+
+    public void refreshPeaks(){
+        Integer position=timesRanges.indexOf(timeRange.getText().toString());
+        Integer peaks= recodingPeaksDB.readDB(timesRangesMillisecond.get(position));
+        peaksCounter.setText(peaks.toString());
+    }
+
+
 
 }
