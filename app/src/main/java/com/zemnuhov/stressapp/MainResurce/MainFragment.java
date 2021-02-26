@@ -96,6 +96,7 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
             currentAndAvgLayout.refreshAvg();
         }
         currentAndAvgLayout.setCurrentValue(valueTonic);
+        currentAndAvgLayout.setScale(valueTonic.intValue());
     }
 
     @Override

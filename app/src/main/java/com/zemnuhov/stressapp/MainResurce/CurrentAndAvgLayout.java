@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.zemnuhov.stressapp.DataBase.RecodingTonicDB;
+import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
+import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ public class CurrentAndAvgLayout extends Fragment {
     private final ArrayList<String> timesRanges=new ArrayList<>(Arrays.asList("10M","1H","1D"));
     private final ArrayList<Long> timesRangesMillisecond=new ArrayList(Arrays.asList(600000L,3600000L,86400000L));
     private RecodingTonicDB recodingTonicDB;
+    private ScaleView scale;
 
     public static CurrentAndAvgLayout newInstance() {
         CurrentAndAvgLayout fragment = new CurrentAndAvgLayout();
@@ -36,6 +39,10 @@ public class CurrentAndAvgLayout extends Fragment {
         timeRange=view.findViewById(R.id.time_range_tonic);
         timeRange.setText(timesRanges.get(0));
         recodingTonicDB=new RecodingTonicDB();
+        scale=ScaleView.newInstance();
+        GlobalValues.getFragmentManager().beginTransaction().
+                replace(R.id.scale_fragment,scale).
+                commit();
     }
 
     @Nullable
@@ -68,5 +75,8 @@ public class CurrentAndAvgLayout extends Fragment {
 
     public void setCurrentValue(Double value){
         currentValue.setText(String.valueOf(value.intValue()));
+    }
+    public void setScale(Integer value){
+        scale.setScale(value);
     }
 }
