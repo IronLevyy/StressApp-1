@@ -147,7 +147,7 @@ public class BleServiceAdapter {
         gattServiceIntent = new Intent(context, BluetoothLeService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(gattServiceIntent);
-        }else{
+        }else {
             context.startService(gattServiceIntent);
         }
         context.bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);

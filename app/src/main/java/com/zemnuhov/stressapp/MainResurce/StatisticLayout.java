@@ -58,6 +58,7 @@ public class StatisticLayout extends Fragment {
         pieChart.setData(data);
         pieChart.setDrawSliceText(false);
         pieChart.getLegend().setEnabled(false);
+        pieChart.setDescription(null);
         pieChart.invalidate();
     }
 }

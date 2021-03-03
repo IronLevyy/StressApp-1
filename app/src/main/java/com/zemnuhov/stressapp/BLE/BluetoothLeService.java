@@ -19,6 +19,7 @@ import android.util.Log;
 import com.zemnuhov.stressapp.DataBase.RecodingPeaksDB;
 import com.zemnuhov.stressapp.DataBase.RecodingTonicDB;
 import com.zemnuhov.stressapp.DataBase.ResultDB;
+import com.zemnuhov.stressapp.Notifications.NotificationClass;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -112,6 +113,28 @@ public class BluetoothLeService extends Service {
         }
     };
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        dataTransform=new DataTransform();
+        peaksArray=new HashMap<>();
+        recodingPeaksDB =new RecodingPeaksDB();
+        recodingTonicDB=new RecodingTonicDB();
+        lastRecodingTonic=0L;
+        NotificationClass notification=new NotificationClass();
+        notification.discoveredStressNotifi();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForeground(100,notification.getNotification());
+        }else {
+            startForeground(100,notification.getNotification());
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
     private void broadcastUpdate(final String action) {
         final Intent intent = new Intent(action);
         sendBroadcast(intent);
@@ -124,26 +147,32 @@ public class BluetoothLeService extends Service {
         Date time = calendar.getTime();
         if (data != null && data.length > 0) {
             String dataString=new String(data);
-
-            double value=(Double.parseDouble(dataString)/1023) * 10000;
-            intent.putExtra(BluetoothLeService.CLEAR_DATA,value);
-            Double phasicValue=dataTransform.filterData(value);
-            intent.putExtra(BluetoothLeService.PHASIC_DATA,phasicValue);
-
-            intent.putExtra(BluetoothLeService.NOW_TIME,time.getTime());
-            if(value>100) {
-                if (phasicValue != null) {
-                    peaksCounter(intent, phasicValue, time.getTime());
-                }
-                if (time.getTime() - lastRecodingTonic > 30000) {
-                    lastRecodingTonic = time.getTime();
-                    recodingTonicDB.addToDB(time.getTime(), value);//Добавление тоники.
-                    intent.putExtra(BluetoothLeService.IS_TONIC, true);
-                }
-            }
-            Log.i("Value:",String.valueOf(value));
+            trainingIntent(dataString,intent,time);
         }
         sendBroadcast(intent);
+        cleaningDB(time);
+    }
+
+    private void trainingIntent(String dataString,Intent intent,Date time){
+        Double value=(Double.parseDouble(dataString)/1023) * 10000;
+        Double phasicValue=dataTransform.filterData(value);
+        if(value>100) {
+            if (phasicValue != null) {
+                peaksCounter(intent, phasicValue, time.getTime());
+            }
+            if (time.getTime() - lastRecodingTonic > 30000) {
+                lastRecodingTonic = time.getTime();
+                recodingTonicDB.addToDB(time.getTime(), value);//Добавление тоники.
+                intent.putExtra(BluetoothLeService.IS_TONIC, true);
+            }
+        }
+        intent.putExtra(BluetoothLeService.CLEAR_DATA,value);
+        intent.putExtra(BluetoothLeService.PHASIC_DATA,phasicValue);
+        intent.putExtra(BluetoothLeService.NOW_TIME,time.getTime());
+        Log.i("Value:",String.valueOf(value));
+    }
+
+    private void cleaningDB(Date time){
         SimpleDateFormat formatForDateNow = new SimpleDateFormat("HH:mm");
         Log.i("Calendar",String.valueOf(formatForDateNow.format(time)));
         if(formatForDateNow.format(time).equals("23:59")){
@@ -181,10 +210,6 @@ public class BluetoothLeService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        // After using a given device, you should make sure that BluetoothGatt.close() is called
-        // such that resources are cleaned up properly.  In this particular example, close() is
-        // invoked when the UI is disconnected from the Service.
-        //close();
         return super.onUnbind(intent);
     }
 
@@ -195,25 +220,7 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        dataTransform=new DataTransform();
-        peaksArray=new HashMap<>();
-        recodingPeaksDB =new RecodingPeaksDB();
-        recodingTonicDB=new RecodingTonicDB();
-        lastRecodingTonic=0L;
-        NotificationClass notification=new NotificationClass();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForeground(100,notification.getNotification());
-        }
-    }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        //Log.i("connectionService","connected");
-        return binder;
-    }
 
     public boolean initialize() {
         if (bluetoothManager == null) {

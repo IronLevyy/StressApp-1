@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/shadow"
-    android:padding="13dp">
+    android:padding="@dimen/pading_13">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -15,38 +15,44 @@
             android:orientation="vertical"
             android:gravity="center">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:text="Количество пиков"
-                android:textSize="17sp"
+                android:textSize="@dimen/peaks_layout_text_dimens"
                 android:textColor="@color/black"
                 android:layout_gravity="center"/>
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_baseline_show_chart_24"
                 android:layout_gravity="center"
                 />
             <TextView
                 android:id="@+id/peaks_counter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:text="0"
-                android:textSize="30sp"
+                android:textSize="@dimen/peaks_layout_value_dimens"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_gravity="center"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
         <TextView
             android:id="@+id/time_range"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:gravity="bottom|right"
-            android:layout_gravity="bottom|right"
+            android:layout_width="@dimen/range_size"
+            android:layout_height="@dimen/range_size"
+            android:gravity="bottom|end"
+            android:layout_gravity="bottom|end"
             android:textColor="@color/black"
-            android:textSize="15dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"/>
+            android:textSize="@dimen/range_text_size"
+            android:layout_marginRight="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_5"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 

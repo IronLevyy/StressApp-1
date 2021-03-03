@@ -14,4 +14,7 @@
     <color name="yellow_active">#ffee58</color>
     <color name="red_not_active">#ffccbc</color>
     <color name="red_active">#ff7043</color>
+
+    <color name="pie_chart_user1">#ff7043</color>
+    <color name="pie_chart_user2">#ffa270</color>
 </resources>

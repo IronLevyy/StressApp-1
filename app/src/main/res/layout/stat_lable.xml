@@ -6,19 +6,21 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:background="@drawable/shadow"
-    android:padding="13dp">
+    android:padding="@dimen/pading_13">
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="16dp"
-        android:layout_weight="5"/>
+        android:layout_margin="@dimen/margin_16"
+        android:layout_weight="0.5"/>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_weight="0.9"
+        >
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
@@ -34,9 +36,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Семья"
-                android:textSize="16dp"
+                android:textSize="@dimen/statistic_text_size"
                 android:textColor="@color/black"
-                android:layout_marginBottom="3dp"/>
+                android:layout_marginBottom="@dimen/statistic_margin"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -53,9 +55,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Работа"
-                android:textSize="16dp"
+                android:textSize="@dimen/statistic_text_size"
                 android:textColor="@color/black"
-                android:layout_marginBottom="3dp"/>
+                android:layout_marginBottom="@dimen/statistic_margin"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -73,9 +75,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Друзья"
-                android:textSize="16dp"
+                android:textSize="@dimen/statistic_text_size"
                 android:textColor="@color/black"
-                android:layout_marginBottom="3dp"/>
+                android:layout_marginBottom="@dimen/statistic_margin"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -93,9 +95,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Здоровье"
-                android:textSize="16dp"
+                android:textSize="@dimen/statistic_text_size"
                 android:textColor="@color/black"
-                android:layout_marginBottom="3dp"
+                android:layout_marginBottom="@dimen/statistic_margin"
                 />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -114,9 +116,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Артефакты"
-                android:textSize="16dp"
+                android:textSize="@dimen/statistic_text_size"
                 android:textColor="@color/black"
-                android:layout_marginBottom="3dp"/>
+                android:layout_marginBottom="@dimen/statistic_margin"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -125,64 +127,66 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="@dimen/margin_20"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp">
+        android:layout_marginLeft="@dimen/margin_10"
+        android:layout_weight="1"
+        android:gravity="center">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="34"
-            android:textSize="16dp"
+            android:textSize="@dimen/statistic_text_size"
             android:textColor="@color/black"
             android:layout_gravity="center"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="@dimen/statistic_margin"
             android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="11"
-            android:textSize="16dp"
+            android:textSize="@dimen/statistic_text_size"
             android:textColor="@color/black"
             android:layout_gravity="center"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="@dimen/statistic_margin"
             android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="40"
-            android:textSize="16dp"
+            android:textSize="@dimen/statistic_text_size"
             android:textColor="@color/black"
             android:layout_gravity="center"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="@dimen/statistic_margin"
             android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="10"
-            android:textSize="16dp"
+            android:textSize="@dimen/statistic_text_size"
             android:textColor="@color/black"
             android:layout_gravity="center"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="@dimen/statistic_margin"
             android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="5"
-            android:textSize="16dp"
+            android:textSize="@dimen/statistic_text_size"
             android:textColor="@color/black"
             android:layout_gravity="center"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="@dimen/statistic_margin"
             android:textStyle="bold"/>
 
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
     <androidx.appcompat.widget.AppCompatImageButton
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/statistic_button_size"
+        android:layout_height="@dimen/statistic_button_size"
         android:src="@drawable/ic_baseline_add_24"
         android:background="@drawable/round_button" />
 

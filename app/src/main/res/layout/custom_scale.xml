@@ -11,65 +11,65 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_8000"
         android:orientation="horizontal"
-        android:layout_width="45dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/red_width3"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/red_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_7500"
         android:orientation="horizontal"
-        android:layout_width="43dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/red_width2"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/red_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_6500"
         android:orientation="horizontal"
-        android:layout_width="41dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/red_width1"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/red_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_5500"
         android:orientation="horizontal"
-        android:layout_width="39dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/yellow_width2"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/yellow_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_4500"
         android:orientation="horizontal"
-        android:layout_width="37dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/yellow_width1"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/yellow_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_4000"
         android:orientation="horizontal"
-        android:layout_width="35dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/green_width"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/green_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_3000"
         android:orientation="horizontal"
-        android:layout_width="35dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/green_width"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/green_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_2000"
         android:orientation="horizontal"
-        android:layout_width="35dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/green_width"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/green_not_active"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/val_1000"
         android:orientation="horizontal"
-        android:layout_width="35dp"
-        android:layout_height="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="@dimen/green_width"
+        android:layout_height="@dimen/height_scale"
+        android:layout_marginBottom="@dimen/margin_5"
         android:background="@color/green_not_active"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
