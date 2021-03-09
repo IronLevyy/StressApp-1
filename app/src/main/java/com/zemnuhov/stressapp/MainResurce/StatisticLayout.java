@@ -1,10 +1,12 @@
 package com.zemnuhov.stressapp.MainResurce;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +17,9 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
+import com.zemnuhov.stressapp.StatisticSettings.StatisticSettingActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.List;
 public class StatisticLayout extends Fragment {
 
     private PieChart pieChart;
+    private ImageView settingButton;
 
     public static StatisticLayout newInstance() {
         StatisticLayout fragment = new StatisticLayout();
@@ -32,8 +37,16 @@ public class StatisticLayout extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.stat_lable,container,false);
+        View view=inflater.inflate(R.layout.main_statistic_lable,container,false);
         pieChart=view.findViewById(R.id.pieChart);
+        settingButton=view.findViewById(R.id.setting_icon);
+        settingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(GlobalValues.getContext(), StatisticSettingActivity.class);
+                startActivity(intent);
+            }
+        });
         statLayout();
         return view;
     }

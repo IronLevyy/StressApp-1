@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import com.zemnuhov.stressapp.DataBase.RecodingTonicDB;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
-import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +47,7 @@ public class CurrentAndAvgLayout extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.avg_current_value,container,false);
+        View view=inflater.inflate(R.layout.main_avg_current_value,container,false);
         init(view);
         refreshAvg();
 

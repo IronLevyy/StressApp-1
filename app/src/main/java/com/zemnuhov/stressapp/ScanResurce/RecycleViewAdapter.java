@@ -24,7 +24,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @Override
     public DeviceViewHolder onCreateViewHolder( ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout,parent,false);
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_card_layout,parent,false);
         DeviceViewHolder deviceViewHolder=new DeviceViewHolder(view);
         return deviceViewHolder;
     }

@@ -14,6 +14,7 @@ public class GlobalValues {
      private static Context context;
      private static FragmentManager fragmentManager;
      public static String deviceAddr;
+     public static String dataSP;
      private static String SAVED_TAG= "deviceAddress";
      private static SharedPreferences sPref;
 
@@ -52,5 +53,18 @@ public class GlobalValues {
           sPref = context.getSharedPreferences(SAVED_TAG, MODE_PRIVATE);
           deviceAddr =  sPref.getString(SAVED_TAG, "0");
           return deviceAddr;
+     }
+
+     public static void SharedPreferenceSave(String TAG,String data){
+          sPref = context.getSharedPreferences(TAG,MODE_PRIVATE);
+          SharedPreferences.Editor ed = sPref.edit();
+          ed.putString(TAG, data);
+          ed.commit();
+     }
+
+     public static String SharedPreferenceLoad(String TAG){
+          sPref = context.getSharedPreferences(TAG, MODE_PRIVATE);
+          dataSP =  sPref.getString(TAG, "0");
+          return dataSP;
      }
 }

@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 
 import com.zemnuhov.stressapp.DataBase.RecodingPeaksDB;
@@ -42,7 +41,7 @@ public class PeaksLayout extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.number_of_peaks,container,false);
+        View view=inflater.inflate(R.layout.main_number_of_peaks,container,false);
         init(view);
         refreshPeaks();
 

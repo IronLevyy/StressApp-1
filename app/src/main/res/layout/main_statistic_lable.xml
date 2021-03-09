@@ -184,11 +184,12 @@
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:layout_width="@dimen/statistic_button_size"
-        android:layout_height="@dimen/statistic_button_size"
-        android:src="@drawable/ic_baseline_add_24"
-        android:background="@drawable/round_button" />
+   <ImageView
+       android:id="@+id/setting_icon"
+       android:layout_width="@dimen/statistic_button_size"
+       android:layout_height="@dimen/statistic_button_size"
+       android:src="@drawable/ic_baseline_settings_24"
+       android:gravity="center"/>
 
 
 

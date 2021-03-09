@@ -30,6 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".StatisticSettings.StatisticSettingActivity"/>
         <receiver android:name=".Notifications.Receiver"/>
     </application>
 

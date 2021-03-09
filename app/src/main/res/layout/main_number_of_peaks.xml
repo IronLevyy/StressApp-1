@@ -24,6 +24,7 @@
                 android:textColor="@color/black"
                 android:layout_gravity="center"/>
             <ImageView
+                android:id="@+id/peaks_image"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_width="match_parent"
