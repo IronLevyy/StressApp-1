@@ -46,12 +46,14 @@ public class StatisticSettingActivity extends AppCompatActivity implements
     private ImageButton addSourcesButton;
     private ImageButton addIntervalButton;
     private ArrayList<String> intervals;
+    private Bundle arguments;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_statistic_activity);
+        arguments = getIntent().getExtras();
         init();
         fillingLayoutSource();
         fillingLayoutIntervals();
@@ -67,13 +69,14 @@ public class StatisticSettingActivity extends AppCompatActivity implements
                 if(sourceItems.size()<7) {
                     if (!title.equals("")) {
                         SourceStressItem sourceStressItem =
-                                SourceStressItem.newInstance(title, keyReturnSource(sourceItems));
+                                SourceStressItem.newInstance(title, keyReturnSource(sourceItems),arguments);
                         sourceItems.put(sourceItems.size(),sourceStressItem);
                         getSupportFragmentManager().beginTransaction()
                                 .add(sourceStressLinear.getId(), sourceStressItem)
                                 .commit();
                         sourceStressItem.registerCallBack(StatisticSettingActivity.this::deleted);
                         refreshSourceSPreference();
+                        editSources.setText("");
                     }else {
                         Toast.makeText(getApplicationContext(),
                                 "Вы не ввели название!",
@@ -92,16 +95,25 @@ public class StatisticSettingActivity extends AppCompatActivity implements
         addIntervalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String title=editTitleInterval.getText().toString();
-                TimeRangeItem timeRangeItem =
-                       TimeRangeItem.newInstance(title+"_00:00-00:00",keyReturnTimeRange(timeRangeItemArrayList));
-                timeRangeItemArrayList.put(timeRangeItem.getIdItem(),timeRangeItem);
-                getSupportFragmentManager().beginTransaction()
-                        .add(intervalsLinear.getId(), timeRangeItem)
-                        .commit();
-                timeRangeItem.registerCallback(StatisticSettingActivity.this::deleteInterval);
-                timeRangeItem.registerCallback(StatisticSettingActivity.this::refresh);
-                refreshIntervalSPreference();
+                String title = editTitleInterval.getText().toString();
+                if (!title.equals("")) {
+                    TimeRangeItem timeRangeItem =
+                            TimeRangeItem.newInstance(title + "_00:00-00:00", keyReturnTimeRange(timeRangeItemArrayList));
+                    timeRangeItemArrayList.put(timeRangeItem.getIdItem(), timeRangeItem);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(intervalsLinear.getId(), timeRangeItem)
+                            .commit();
+                    timeRangeItem.registerCallback(StatisticSettingActivity.this::deleteInterval);
+                    timeRangeItem.registerCallback(StatisticSettingActivity.this::refresh);
+                    refreshIntervalSPreference();
+                    editTitleInterval.setText("");
+                } else{
+                    Toast.makeText(getApplicationContext(),
+                            "Вы не ввели название!",
+                            Toast.LENGTH_LONG)
+                            .show();
+
+                }
             }
         });
     }
@@ -129,7 +141,7 @@ public class StatisticSettingActivity extends AppCompatActivity implements
     private void fillingLayoutSource(){
         Integer id=0;
         for(String item:sources){
-            SourceStressItem sourceStressItem=SourceStressItem.newInstance(item,id);
+            SourceStressItem sourceStressItem=SourceStressItem.newInstance(item,id,arguments);
             sourceItems.put(id,sourceStressItem);
             getSupportFragmentManager().beginTransaction()
                     .add(sourceStressLinear.getId(),sourceStressItem)

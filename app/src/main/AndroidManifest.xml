@@ -24,6 +24,7 @@
             android:enabled="true"
             android:exported="true" />
 
+        <receiver android:name=".Notifications.NotificationClass$Receiver"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +32,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".StatisticSettings.StatisticSettingActivity"/>
-        <receiver android:name=".Notifications.Receiver"/>
     </application>
 
 </manifest>

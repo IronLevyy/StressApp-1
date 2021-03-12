@@ -61,9 +61,16 @@ public class PeaksLayout extends Fragment {
     }
 
     public void refreshPeaks(){
-        Integer position=timesRanges.indexOf(timeRange.getText().toString());
-        Integer peaks= recodingPeaksDB.readDB(timesRangesMillisecond.get(position));
-        peaksCounter.setText(peaks.toString());
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Integer position=timesRanges.indexOf(timeRange.getText().toString());
+                Integer peaks= recodingPeaksDB.readDB(timesRangesMillisecond.get(position));
+                peaksCounter.setText(peaks.toString());
+            }
+        });
+        thread.start();
+
     }
 
 

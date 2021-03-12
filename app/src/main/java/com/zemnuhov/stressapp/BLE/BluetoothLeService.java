@@ -19,8 +19,11 @@ import android.util.Log;
 import com.zemnuhov.stressapp.DataBase.RecodingPeaksDB;
 import com.zemnuhov.stressapp.DataBase.RecodingTonicDB;
 import com.zemnuhov.stressapp.DataBase.ResultDB;
+import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.Notifications.NotificationClass;
+import com.zemnuhov.stressapp.StatisticSettings.ParsingSPref;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +47,9 @@ public class BluetoothLeService extends Service {
     private RecodingPeaksDB recodingPeaksDB;
     private RecodingTonicDB recodingTonicDB;
     private Long lastRecodingTonic;
+    private Long lastNotification;
+    private ParsingSPref parsingSPref;
+    private NotificationClass notification;
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -120,14 +126,11 @@ public class BluetoothLeService extends Service {
         peaksArray=new HashMap<>();
         recodingPeaksDB =new RecodingPeaksDB();
         recodingTonicDB=new RecodingTonicDB();
+
         lastRecodingTonic=0L;
-        NotificationClass notification=new NotificationClass();
-        notification.discoveredStressNotifi();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForeground(100,notification.getNotification());
-        }else {
-            startForeground(100,notification.getNotification());
-        }
+        lastNotification=0L;
+        notification=new NotificationClass();
+        startForeground(100,notification.getForegroundNotification());
     }
 
     @Override
@@ -140,21 +143,60 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
+    private void broadcastUpdate(final String action
+            , final BluetoothGattCharacteristic characteristic) {
+
         final Intent intent = new Intent(action);
         final byte[] data = characteristic.getValue();
         Calendar calendar = Calendar.getInstance();
         Date time = calendar.getTime();
         if (data != null && data.length > 0) {
             String dataString=new String(data);
-            trainingIntent(dataString,intent,time);
+            Double value=(Double.parseDouble(dataString)/1023) * 10000;
+            trainingIntent(value,intent,time);
+            peaksController(time,value);
         }
         sendBroadcast(intent);
         cleaningDB(time);
     }
 
-    private void trainingIntent(String dataString,Intent intent,Date time){
-        Double value=(Double.parseDouble(dataString)/1023) * 10000;
+    private void peaksController(Date time,Double value){
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat("mm");
+        if(formatForDateNow.format(time).substring(1).equals("0")){
+            Integer count=recodingPeaksDB.readDB(600000L);
+            if(count>20&&new Date().getTime()-lastNotification>500000){
+                Log.i("myLogs","1111111");
+                lastNotification=new Date().getTime();
+                parsingSPref=
+                        new ParsingSPref(GlobalValues.SharedPreferenceLoad(
+                                ParsingSPref.SP_INTERVAL_TAG));
+                ArrayList<ArrayList<String>> timeAndSources=parsingSPref.getTimesAndSources();
+                for(ArrayList<String> item:timeAndSources){
+                    Calendar calendar=Calendar.getInstance();
+                    Date date=calendar.getTime();
+                    SimpleDateFormat formatter = new SimpleDateFormat("H:mm dd.MM.yyyy");
+                    SimpleDateFormat formatterDate = new SimpleDateFormat("dd.MM.yyyy");
+                    try {
+                        Date begin=formatter.parse(item.get(0)+" "+formatterDate.format(date));
+                        Date end=formatter.parse(item.get(1)+" "+formatterDate.format(date));
+                        if(time.after(begin)&&time.before(end)){
+                            if(timeAndSources.size()>2){
+                                notification.discoveredStressNotification(count
+                                        ,value,time.getTime(),item.get(2),item.get(3));
+                            }else {
+                                notification.discoveredStressNotification(count
+                                        ,value,time.getTime());
+                            }
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void trainingIntent(Double value,Intent intent,Date time){
         Double phasicValue=dataTransform.filterData(value);
         if(value>100) {
             if (phasicValue != null) {
@@ -213,14 +255,11 @@ public class BluetoothLeService extends Service {
         return super.onUnbind(intent);
     }
 
-
     public class LocalBinder extends Binder {
         public BluetoothLeService getService() {
             return BluetoothLeService.this;
         }
     }
-
-
 
     public boolean initialize() {
         if (bluetoothManager == null) {
@@ -291,7 +330,6 @@ public class BluetoothLeService extends Service {
         bluetoothGatt = null;
     }
 
-
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (bluetoothAdapter == null || bluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -299,7 +337,6 @@ public class BluetoothLeService extends Service {
         }
         bluetoothGatt.readCharacteristic(characteristic);
     }
-
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
         if (bluetoothAdapter == null || bluetoothGatt == null) {
@@ -309,7 +346,6 @@ public class BluetoothLeService extends Service {
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
     }
-
 
     public List<BluetoothGattService> getSupportedGattServices() {
         if (bluetoothGatt == null) return null;

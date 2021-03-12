@@ -3,6 +3,7 @@ package com.zemnuhov.stressapp.StatisticSettings;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -213,6 +214,10 @@ public class TimeRangeItem extends Fragment implements DialogSourcesInRanges.Dia
         for(String source:sourcesList){
             TextView textView=new TextView(getContext());
             textView.setText(source);
+            if(getResources().getDisplayMetrics().xdpi>=320&&getResources().getDisplayMetrics().xdpi<380){
+                textView.setTextSize(8.4F);
+            }
+            Log.i("LLLLL",String.valueOf(getResources().getDisplayMetrics().xdpi));
             sources.addView(textView);
         }
     }

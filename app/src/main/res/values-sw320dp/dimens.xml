@@ -24,4 +24,14 @@
     <dimen name="red_width3">27dp</dimen>
     <dimen name="height_scale">6dp</dimen>
     <dimen name="weight">1</dimen>
+
+    //SettingFragment
+    <dimen name="setting_title_sp">12sp</dimen>
+    <dimen name="setting_edit_text_sp">9.6sp</dimen>
+    <dimen name="setting_add_button_width">30dp</dimen>
+    <dimen name="setting_add_button_height">15dp</dimen>
+    <dimen name="setting_margin_35">21dp</dimen>
+    <dimen name="setting_margin_40">24dp</dimen>
+    <dimen name="base_text_size">9.6sp</dimen>
+    <dimen name="small_text_size">8.4sp</dimen>
 </resources>

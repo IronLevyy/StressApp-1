@@ -70,6 +70,7 @@ public class CurrentAndAvgLayout extends Fragment {
         Integer position=timesRanges.indexOf(timeRange.getText().toString());
         Integer avg= recodingTonicDB.readDB(timesRangesMillisecond.get(position));
         avgValue.setText(avg.toString());
+
     }
 
     public void setCurrentValue(Double value){

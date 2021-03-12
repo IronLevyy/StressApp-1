@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Источником вашего стресса является"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:layout_margin="@dimen/margin_16"/>
+    <TextView
+        android:id="@+id/source_in_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="source"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/margin_16"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/button_no_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_16"
+            android:layout_weight="1"
+            android:text="Нет"/>
+        <Button
+            android:id="@+id/button_yes_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_16"
+            android:layout_weight="1"
+            android:text="Да"/>
+
+    </LinearLayout>
+
+</LinearLayout>

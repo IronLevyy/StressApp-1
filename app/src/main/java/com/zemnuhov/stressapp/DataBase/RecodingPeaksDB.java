@@ -20,12 +20,18 @@ public class RecodingPeaksDB {
     }
 
     public void addToDB(Long time,Double max){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("time", time);
-        cv.put("max", max);
-        long rowID = db.insert("Peaks", null, cv);
-        dbHelper.close();
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                ContentValues cv = new ContentValues();
+                cv.put("time", time);
+                cv.put("max", max);
+                long rowID = db.insert("Peaks", null, cv);
+                dbHelper.close();
+            }
+        });
+        thread.start();
     }
 
     public Integer readDB(Long range){

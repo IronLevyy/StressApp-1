@@ -78,8 +78,6 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
             }
         });
         handler.postDelayed(thread,5000);
-
-
     }
 
 

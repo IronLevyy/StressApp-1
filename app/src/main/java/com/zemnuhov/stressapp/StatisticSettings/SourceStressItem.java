@@ -21,15 +21,17 @@ public class SourceStressItem extends Fragment {
     private DeletedCallBack callBack;
     private ImageView deletedButton;
     private Integer id;
+    private Bundle arguments;
 
     public String getTitle() {
         return title;
     }
 
-    public static SourceStressItem newInstance(String title,Integer id) {
+    public static SourceStressItem newInstance(String title,Integer id,Bundle arguments) {
         SourceStressItem fragment = new SourceStressItem();
         fragment.title=title;
         fragment.id=id;
+        fragment.arguments=arguments;
         return fragment;
     }
 
@@ -39,10 +41,28 @@ public class SourceStressItem extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.settings_source_of_stress,container,false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container
+            , @Nullable Bundle savedInstanceState) {
+        View view= inflater.inflate(R.layout.settings_source_of_stress,container
+                ,false);
         init(view);
         titleStress.setText(title);
+
+        if(arguments!=null){
+            titleStress.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DialogSelectedSource dialog=DialogSelectedSource.newInstance(
+                            arguments.getLong("TIME_IN_INTENT")
+                            ,title
+                            ,arguments.getInt("PEAKS_COUNT_IN_INTENT")
+                            ,arguments.getDouble("TONIC_AVG_IN_INTENT")
+                    );
+                    dialog.show(getFragmentManager(),"ADD_DIALOG");
+                }
+            });
+        }
+
         deletedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
