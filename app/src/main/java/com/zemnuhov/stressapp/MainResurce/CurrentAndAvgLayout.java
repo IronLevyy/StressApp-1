@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.zemnuhov.stressapp.DataBase.RecodingTonicDB;
+import com.zemnuhov.stressapp.DataBase.DataBaseClass;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
 
@@ -24,7 +24,7 @@ public class CurrentAndAvgLayout extends Fragment {
     private TextView timeRange;
     private final ArrayList<String> timesRanges=new ArrayList<>(Arrays.asList("10M","1H","1D"));
     private final ArrayList<Long> timesRangesMillisecond=new ArrayList(Arrays.asList(600000L,3600000L,86400000L));
-    private RecodingTonicDB recodingTonicDB;
+    private DataBaseClass dataBase;
     private ScaleView scale;
 
     public static CurrentAndAvgLayout newInstance() {
@@ -37,7 +37,7 @@ public class CurrentAndAvgLayout extends Fragment {
         avgValue=view.findViewById(R.id.avg_value);
         timeRange=view.findViewById(R.id.time_range_tonic);
         timeRange.setText(timesRanges.get(0));
-        recodingTonicDB=new RecodingTonicDB();
+        dataBase=new DataBaseClass();
         scale=ScaleView.newInstance();
         GlobalValues.getFragmentManager().beginTransaction().
                 replace(R.id.scale_fragment,scale).
@@ -68,7 +68,7 @@ public class CurrentAndAvgLayout extends Fragment {
 
     public void refreshAvg(){
         Integer position=timesRanges.indexOf(timeRange.getText().toString());
-        Integer avg= recodingTonicDB.readDB(timesRangesMillisecond.get(position));
+        Integer avg= dataBase.readAvgTonic(timesRangesMillisecond.get(position));
         avgValue.setText(avg.toString());
 
     }

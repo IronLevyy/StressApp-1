@@ -13,6 +13,7 @@
         android:background="@drawable/shadow"
         android:layout_weight="0.6">
         <com.jjoe64.graphview.GraphView
+            android:id="@+id/statistic_bar_chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/margin_16"/>
@@ -51,9 +52,16 @@
                 android:layout_margin="@dimen/margin_16"/>
         </LinearLayout>
         <ScrollView
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_16"/>
+            android:layout_margin="@dimen/margin_16">
+            <LinearLayout
+                android:id="@+id/statistic_item_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"/>
+        </ScrollView>
 
     </LinearLayout>
 

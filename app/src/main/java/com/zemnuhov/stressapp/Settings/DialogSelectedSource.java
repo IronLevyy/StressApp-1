@@ -1,19 +1,17 @@
-package com.zemnuhov.stressapp.StatisticSettings;
+package com.zemnuhov.stressapp.Settings;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.zemnuhov.stressapp.DataBase.SourcesStatisticDB;
+import com.zemnuhov.stressapp.DataBase.DataBaseClass;
 import com.zemnuhov.stressapp.R;
 
 public class DialogSelectedSource extends DialogFragment {
@@ -48,8 +46,8 @@ public class DialogSelectedSource extends DialogFragment {
         buttonYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SourcesStatisticDB statisticDB=new SourcesStatisticDB();
-                statisticDB.addToDB(time,source,peaksCount,tonicAvg);
+                DataBaseClass dataBase=new DataBaseClass();
+                dataBase.addLineInStatistic(time,source,peaksCount,tonicAvg);
                 dismiss();
             }
         });

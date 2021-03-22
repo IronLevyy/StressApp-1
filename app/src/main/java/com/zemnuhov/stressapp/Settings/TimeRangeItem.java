@@ -1,4 +1,4 @@
-package com.zemnuhov.stressapp.StatisticSettings;
+package com.zemnuhov.stressapp.Settings;
 
 import android.os.Bundle;
 import android.text.Editable;

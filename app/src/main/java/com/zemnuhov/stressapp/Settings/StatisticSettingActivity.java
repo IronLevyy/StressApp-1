@@ -1,18 +1,13 @@
-package com.zemnuhov.stressapp.StatisticSettings;
+package com.zemnuhov.stressapp.Settings;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zemnuhov.stressapp.GlobalValues;
@@ -20,7 +15,6 @@ import com.zemnuhov.stressapp.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 

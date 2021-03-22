@@ -18,22 +18,22 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.zemnuhov.stressapp.DataBase.SourcesStatisticDB;
+import com.zemnuhov.stressapp.DataBase.DataBaseClass;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
-import com.zemnuhov.stressapp.StatisticSettings.StatisticSettingActivity;
+import com.zemnuhov.stressapp.Settings.StatisticSettingActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class StatisticLayout extends Fragment implements SourcesStatisticDB.CallbackRefreshStatistic {
+public class StatisticLayout extends Fragment implements DataBaseClass.CallbackRefreshStatistic {
 
     private PieChart pieChart;
     private ImageView settingButton;
     private HashMap<String,Integer> countSources;
-    private SourcesStatisticDB statisticDB;
+    private DataBaseClass dataBase;
     private LinearLayout sourceLayout;
 
     ArrayList<Integer> colors = new ArrayList<Integer>(
@@ -58,8 +58,8 @@ public class StatisticLayout extends Fragment implements SourcesStatisticDB.Call
         settingButton=view.findViewById(R.id.setting_icon);
         sourceLayout=view.findViewById(R.id.source_layout_statistic);
 
-        statisticDB=new SourcesStatisticDB();
-        statisticDB.registerCallback(this::refresh);
+        dataBase = new DataBaseClass();
+        dataBase.registerCallback(this::refresh);
 
         settingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +75,7 @@ public class StatisticLayout extends Fragment implements SourcesStatisticDB.Call
 
     private void statLayout(){
         List<PieEntry> entries = new ArrayList<>();
-        countSources=statisticDB.readSourcesDB();
+        countSources=dataBase.readSourcesDB();
         ArrayList<Integer> pieChartColors=new ArrayList<>();
         Boolean isZero=false;
         Integer iter= 0;

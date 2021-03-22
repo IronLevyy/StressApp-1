@@ -1,4 +1,4 @@
-package com.zemnuhov.stressapp.StatisticSettings;
+package com.zemnuhov.stressapp.Settings;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

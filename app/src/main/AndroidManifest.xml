@@ -31,7 +31,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StatisticSettings.StatisticSettingActivity"/>
+        <activity android:name=".Settings.StatisticSettingActivity"/>
+        <activity android:name=".Statistic.StatisticActivity"/>
     </application>
 
 </manifest>

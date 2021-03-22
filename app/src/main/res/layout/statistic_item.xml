@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="@dimen/margin_5"
+    android:background="@drawable/shadow"
+    android:padding="@dimen/margin_16">
+    <TextView
+        android:id="@+id/statistic_date_in_item"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="dd-mm-yyyy"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_margin="@dimen/margin_5">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Значение тоники:"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/statistic_tonic_value"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="3125"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_margin="@dimen/margin_5">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Количество пиков:"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/statistic_peaks_value"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="3125"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -13,13 +13,13 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.zemnuhov.stressapp.DataBase.SourcesStatisticDB;
+import com.zemnuhov.stressapp.DataBase.DataBaseClass;
 import com.zemnuhov.stressapp.GlobalValues;
 import com.zemnuhov.stressapp.R;
-import com.zemnuhov.stressapp.StatisticSettings.StatisticSettingActivity;
+import com.zemnuhov.stressapp.Settings.StatisticSettingActivity;
 
+import static android.app.Notification.CATEGORY_SERVICE;
 import static android.app.Notification.EXTRA_NOTIFICATION_ID;
-import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
 
 public class NotificationClass {
 
@@ -35,8 +35,8 @@ public class NotificationClass {
                 .setContentTitle("Мы следим за вашим состоянием")
                 .setContentText("Соединение с устройством установлено");
         Notification notification=builder.setOngoing(true)
-                .setPriority(PRIORITY_DEFAULT)
-                .setCategory(Notification.CATEGORY_SERVICE)
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setCategory(CATEGORY_SERVICE)
                 .build();
         builder.setDefaults(Notification.DEFAULT_ALL);
         createNotificationChannel(FOREGROUND_CHANNEL_ID);
@@ -61,7 +61,7 @@ public class NotificationClass {
 
         Intent snoozeIntent = new Intent(GlobalValues.getContext(), Receiver.class);
         snoozeIntent.setAction(ACTION_SNOOZE);
-        snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
+        snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, "default");
         PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(GlobalValues.getContext(),
                 1,snoozeIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -162,8 +162,8 @@ public class NotificationClass {
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(101);
             if(!intent.getStringExtra(EXTRA_NOTIFICATION_ID).equals("default")){
-                SourcesStatisticDB statisticDB=new SourcesStatisticDB();
-                statisticDB.addToDB(time,intent.getStringExtra(EXTRA_NOTIFICATION_ID)
+                DataBaseClass dataBase=new DataBaseClass();
+                dataBase.addLineInStatistic(time,intent.getStringExtra(EXTRA_NOTIFICATION_ID)
                         ,peaksCount
                         ,tonicAvg);
             }else {
