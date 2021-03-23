@@ -17,59 +17,71 @@ import android.view.MenuItem;
 import com.zemnuhov.stressapp.MainResurce.MainFragment;
 import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
+import static com.zemnuhov.stressapp.Settings.ParsingSPref.SP_INTERVAL_TAG;
+import static com.zemnuhov.stressapp.Settings.ParsingSPref.SP_SOURCE_TAG;
+
 public class MainActivity extends AppCompatActivity{
 
     private static final int REQUEST_ENABLE_BT = 1;
-    private BluetoothAdapter bluetoothAdapter;
-    private MenuItem refreshButtonMenu;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        GlobalValues.setContext(getApplicationContext());
-        GlobalValues.setFragmentManager(getSupportFragmentManager());
+        ConstantAndHelp.setContext(getApplicationContext());
+        ConstantAndHelp.setFragmentManager(getSupportFragmentManager());
 
+        String sourcesSharedPref = ConstantAndHelp.SharedPreferenceLoad(SP_SOURCE_TAG);
+        String intervalsSharedPref = ConstantAndHelp.SharedPreferenceLoad(SP_INTERVAL_TAG);
+
+        if(sourcesSharedPref.equals("0")){
+            ConstantAndHelp.SharedPreferenceSave(SP_SOURCE_TAG,ConstantAndHelp.getDefaultSources());
+            sourcesSharedPref = ConstantAndHelp.SharedPreferenceLoad(SP_SOURCE_TAG);
+        }
+        if(intervalsSharedPref.equals("0")|| intervalsSharedPref.equals("")){
+            ConstantAndHelp.SharedPreferenceSave(SP_INTERVAL_TAG,
+                    ConstantAndHelp.getDefaultIntervals());
+            intervalsSharedPref = ConstantAndHelp.SharedPreferenceLoad(SP_INTERVAL_TAG);
+        }
 
         final BluetoothManager bluetoothManager=
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
+        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionStatus = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
 
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
 
 
     }
 
-
     private void startProgram(){
-        if(GlobalValues.loadDeviceAddr().equals("0")) {
+        if(ConstantAndHelp.loadDeviceAddress().equals("0")) {
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.fragment_container, ScanFragment.newInstance()).
                     commit();
         }else {
             getSupportFragmentManager().beginTransaction().
-                    replace(R.id.fragment_container, MainFragment.newInstance(GlobalValues.loadDeviceAddr())).
+                    replace(R.id.fragment_container,
+                            MainFragment.newInstance(ConstantAndHelp.loadDeviceAddress())).
                     commit();
         }
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
-        refreshButtonMenu =menu.findItem(R.id.menu_refresh);
-        GlobalValues.setMainMenu(refreshButtonMenu);
+        MenuItem refreshButtonMenu = menu.findItem(R.id.menu_refresh);
+        ConstantAndHelp.setMainMenu(refreshButtonMenu);
         startProgram();
         return super.onCreateOptionsMenu(menu);
     }

@@ -20,9 +20,6 @@ public class DialogSelectedSource extends DialogFragment {
     private String source;
     private Integer peaksCount;
     private Double tonicAvg;
-    private TextView selectedSource;
-    private Button buttonNo;
-    private Button buttonYes;
 
     public static DialogSelectedSource newInstance(Long time,String source
             ,Integer peaksCount, Double tonicAvg) {
@@ -39,27 +36,21 @@ public class DialogSelectedSource extends DialogFragment {
         AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_sources_activity,null);
-        selectedSource=view.findViewById(R.id.source_in_dialog);
-        buttonNo=view.findViewById(R.id.button_no_dialog);
-        buttonYes=view.findViewById(R.id.button_yes_dialog);
+        TextView selectedSource = view.findViewById(R.id.source_in_dialog);
+        Button buttonNo = view.findViewById(R.id.button_no_dialog);
+        Button buttonYes = view.findViewById(R.id.button_yes_dialog);
         selectedSource.setText(source);
-        buttonYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DataBaseClass dataBase=new DataBaseClass();
-                dataBase.addLineInStatistic(time,source,peaksCount,tonicAvg);
-                dismiss();
-            }
-        });
-        buttonNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-
-
+        clickListeners(buttonNo,buttonYes);
         builder.setView(view);
         return builder.create();
+    }
+
+    private void clickListeners(Button buttonNo, Button buttonYes){
+        buttonYes.setOnClickListener(v -> {
+            DataBaseClass dataBase=new DataBaseClass();
+            dataBase.addLineInStatistic(time,source,peaksCount,tonicAvg);
+            dismiss();
+        });
+        buttonNo.setOnClickListener(v -> dismiss());
     }
 }

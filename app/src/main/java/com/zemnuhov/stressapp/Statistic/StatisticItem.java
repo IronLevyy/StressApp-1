@@ -32,10 +32,9 @@ public class StatisticItem extends Fragment {
         return fragment;
     }
 
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container
+            , Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.statistic_item,container,false);
         dateView=view.findViewById(R.id.statistic_date_in_item);
         tonicView=view.findViewById(R.id.statistic_tonic_value);

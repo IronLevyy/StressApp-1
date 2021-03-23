@@ -16,7 +16,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.zemnuhov.stressapp.DataBase.DataBaseClass;
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.Notifications.NotificationClass;
 import com.zemnuhov.stressapp.Settings.ParsingSPref;
 
@@ -37,7 +37,7 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter bluetoothAdapter;
     private String bluetoothDeviceAddress;
     private BluetoothGatt bluetoothGatt;
-    private DataTransform dataTransform;
+    private DataFilter dataFilter;
     private int connectionState = STATE_DISCONNECTED;
     private Boolean peaksFlag=false;
     private HashMap<Long,Double> peaksArray;
@@ -118,10 +118,9 @@ public class BluetoothLeService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        dataTransform=new DataTransform();
+        dataFilter =new DataFilter();
         peaksArray=new HashMap<>();
         dataBase=new DataBaseClass();
-
         lastRecodingTonic=0L;
         lastNotification=0L;
         notification=new NotificationClass();
@@ -159,15 +158,15 @@ public class BluetoothLeService extends Service {
         SimpleDateFormat formatForDateNow = new SimpleDateFormat("mm");
         if(formatForDateNow.format(time).substring(1).equals("0")){
             if(new Date().getTime()-lastNotification>500000) {
-                Integer count=dataBase.readCountPeak(600000L);
+                int count=dataBase.readCountPeak(600000L);
                 lastNotification = new Date().getTime();
                 dataBase.addTenMinuteLine(time.getTime(),count);
                 if (count > 30){
                         parsingSPref =
-                                new ParsingSPref(GlobalValues.SharedPreferenceLoad(
+                                new ParsingSPref(ConstantAndHelp.SharedPreferenceLoad(
                                         ParsingSPref.SP_INTERVAL_TAG));
                     ArrayList<ArrayList<String>> timeAndSources = parsingSPref.getTimesAndSources();
-                    Boolean flagNotification=false;
+                    boolean flagNotification=false;
                     for (ArrayList<String> item : timeAndSources) {
                         Calendar calendar = Calendar.getInstance();
                         Date date = calendar.getTime();
@@ -201,7 +200,7 @@ public class BluetoothLeService extends Service {
     }
 
     private void trainingIntent(Double value,Intent intent,Date time){
-        Double phasicValue=dataTransform.filterData(value);
+        Double phasicValue= dataFilter.filterData(value);
         if(value>100) {
             if (phasicValue != null) {
                 peaksCounter(intent, phasicValue, time.getTime());
@@ -231,7 +230,7 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    private void peaksCounter(Intent intent,Double value,Long time){
+    private void peaksCounter(Intent intent,double value,long time){
         if(value>0.7){
             if(!peaksFlag){
                 peaksFlag=true;
@@ -259,12 +258,6 @@ public class BluetoothLeService extends Service {
         return super.onUnbind(intent);
     }
 
-    public class LocalBinder extends Binder {
-        public BluetoothLeService getService() {
-            return BluetoothLeService.this;
-        }
-    }
-
     public boolean initialize() {
         if (bluetoothManager == null) {
             bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -282,7 +275,6 @@ public class BluetoothLeService extends Service {
 
         return true;
     }
-
 
     public boolean connect(final String address) {
         if (bluetoothAdapter == null || address == null) {
@@ -307,15 +299,12 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-        // We want to directly connect to the device, so we are setting the autoConnect
-        // parameter to false.
         bluetoothGatt = device.connectGatt(this, false, gattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         bluetoothDeviceAddress = address;
         connectionState = STATE_CONNECTING;
         return true;
     }
-
 
     public void disconnect() {
         if (bluetoothAdapter == null || bluetoothGatt == null) {
@@ -324,7 +313,6 @@ public class BluetoothLeService extends Service {
         }
         bluetoothGatt.disconnect();
     }
-
 
     public void close() {
         if (bluetoothGatt == null) {
@@ -342,7 +330,8 @@ public class BluetoothLeService extends Service {
         bluetoothGatt.readCharacteristic(characteristic);
     }
 
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
+                                              boolean enabled) {
         if (bluetoothAdapter == null || bluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
@@ -355,5 +344,11 @@ public class BluetoothLeService extends Service {
         if (bluetoothGatt == null) return null;
 
         return bluetoothGatt.getServices();
+    }
+
+    public class LocalBinder extends Binder {
+        public BluetoothLeService getService() {
+            return BluetoothLeService.this;
+        }
     }
 }

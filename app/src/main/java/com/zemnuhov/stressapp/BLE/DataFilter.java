@@ -2,12 +2,12 @@ package com.zemnuhov.stressapp.BLE;
 
 import java.util.ArrayList;
 
-public class DataTransform {
+public class DataFilter {
     private ArrayList<Double> filterArray;
     private ArrayList<Double> helpPhasicArray;
     private ArrayList<Double> clearDataArray;
 
-    DataTransform(){
+    DataFilter(){
         filterArray=new ArrayList<>();
         helpPhasicArray=new ArrayList<>();
         clearDataArray=new ArrayList<>();

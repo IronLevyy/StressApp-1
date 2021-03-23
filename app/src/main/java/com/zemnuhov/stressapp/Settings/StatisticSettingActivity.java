@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.R;
 
 import java.util.ArrayList;
@@ -18,21 +18,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+import static com.zemnuhov.stressapp.Settings.ParsingSPref.SP_INTERVAL_TAG;
+import static com.zemnuhov.stressapp.Settings.ParsingSPref.SP_SOURCE_TAG;
+
 public class StatisticSettingActivity extends AppCompatActivity implements
         SourceStressItem.DeletedCallBack,
         TimeRangeItem.DeleteIntervalCallBack,
         TimeRangeItem.RefreshCallBack {
 
-
-    private final String DEFAULT_SOURCES ="Семья:Работа:Друзья:Здоровье:Артефакты";
-    private final String DEFAULT_INTERVALS="Утро_8:00-11:59|День_12:00-17:59|Вечер_18:00-00:00";
     private String sourcesSharedPref;
     private String intervalsSharedPref;
     private ArrayList<String> sources;
     private HashMap<Integer,SourceStressItem> sourceItems;
     private HashMap<Integer,TimeRangeItem> timeRangeItemArrayList;
-    private final String SP_SOURCE_TAG="SP_SOURCE_TAG";
-    private final String SP_INTERVAL_TAG="SP_INTERVAL_TAG";
     private LinearLayout sourceStressLinear;
     private LinearLayout intervalsLinear;
     private EditText editSources;
@@ -56,58 +54,53 @@ public class StatisticSettingActivity extends AppCompatActivity implements
     }
 
     private void onClickListeners(){
-        addSourcesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title=editSources.getText().toString();
-                if(sourceItems.size()<7) {
-                    if (!title.equals("")) {
-                        SourceStressItem sourceStressItem =
-                                SourceStressItem.newInstance(title, keyReturnSource(sourceItems),arguments);
-                        sourceItems.put(sourceItems.size(),sourceStressItem);
-                        getSupportFragmentManager().beginTransaction()
-                                .add(sourceStressLinear.getId(), sourceStressItem)
-                                .commit();
-                        sourceStressItem.registerCallBack(StatisticSettingActivity.this::deleted);
-                        refreshSourceSPreference();
-                        editSources.setText("");
-                    }else {
-                        Toast.makeText(getApplicationContext(),
-                                "Вы не ввели название!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }else{
-                    Toast.makeText(getApplicationContext(),
-                            "Вы не можете добавить больше 7 источников стресса!",
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
-            }
-        });
-
-        addIntervalButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title = editTitleInterval.getText().toString();
+        addSourcesButton.setOnClickListener(v -> {
+            String title=editSources.getText().toString();
+            if(sourceItems.size()<7) {
                 if (!title.equals("")) {
-                    TimeRangeItem timeRangeItem =
-                            TimeRangeItem.newInstance(title + "_00:00-00:00", keyReturnTimeRange(timeRangeItemArrayList));
-                    timeRangeItemArrayList.put(timeRangeItem.getIdItem(), timeRangeItem);
+                    SourceStressItem sourceStressItem =
+                            SourceStressItem.newInstance(title,
+                                    keyReturnSource(sourceItems),arguments);
+                    sourceItems.put(sourceItems.size(),sourceStressItem);
                     getSupportFragmentManager().beginTransaction()
-                            .add(intervalsLinear.getId(), timeRangeItem)
+                            .add(sourceStressLinear.getId(), sourceStressItem)
                             .commit();
-                    timeRangeItem.registerCallback(StatisticSettingActivity.this::deleteInterval);
-                    timeRangeItem.registerCallback(StatisticSettingActivity.this::refresh);
-                    refreshIntervalSPreference();
-                    editTitleInterval.setText("");
-                } else{
+                    sourceStressItem.registerCallBack(StatisticSettingActivity.this::deleted);
+                    refreshSourceSPreference();
+                    editSources.setText("");
+                }else {
                     Toast.makeText(getApplicationContext(),
                             "Вы не ввели название!",
                             Toast.LENGTH_LONG)
                             .show();
-
                 }
+            }else{
+                Toast.makeText(getApplicationContext(),
+                        "Вы не можете добавить больше 7 источников стресса!",
+                        Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+        addIntervalButton.setOnClickListener(v -> {
+            String title = editTitleInterval.getText().toString();
+            if (!title.equals("")) {
+                TimeRangeItem timeRangeItem =
+                        TimeRangeItem.newInstance(title + "_00:00-00:00",
+                                keyReturnTimeRange(timeRangeItemArrayList));
+                timeRangeItemArrayList.put(timeRangeItem.getIdItem(), timeRangeItem);
+                getSupportFragmentManager().beginTransaction()
+                        .add(intervalsLinear.getId(), timeRangeItem)
+                        .commit();
+                timeRangeItem.registerCallback(StatisticSettingActivity.this::deleteInterval);
+                timeRangeItem.registerCallback(StatisticSettingActivity.this::refresh);
+                refreshIntervalSPreference();
+                editTitleInterval.setText("");
+            } else{
+                Toast.makeText(getApplicationContext(),
+                        "Вы не ввели название!",
+                        Toast.LENGTH_LONG)
+                        .show();
+
             }
         });
     }
@@ -166,24 +159,12 @@ public class StatisticSettingActivity extends AppCompatActivity implements
         addSourcesButton=findViewById(R.id.add_source_button);
         addIntervalButton=findViewById(R.id.add_interval_button);
         editTitleInterval=findViewById(R.id.edit_title_interval);
-
         sourceItems=new HashMap<>();
         timeRangeItemArrayList=new HashMap<>();
-        sourcesSharedPref=GlobalValues.SharedPreferenceLoad(SP_SOURCE_TAG);
-        intervalsSharedPref=GlobalValues.SharedPreferenceLoad(SP_INTERVAL_TAG);
-
-        if(sourcesSharedPref.equals("0")){
-            GlobalValues.SharedPreferenceSave(SP_SOURCE_TAG,DEFAULT_SOURCES);
-            sourcesSharedPref=GlobalValues.SharedPreferenceLoad(SP_SOURCE_TAG);
-        }
+        sourcesSharedPref= ConstantAndHelp.SharedPreferenceLoad(SP_SOURCE_TAG);
+        intervalsSharedPref= ConstantAndHelp.SharedPreferenceLoad(SP_INTERVAL_TAG);
         sources = new ArrayList<>(Arrays.asList(sourcesSharedPref.split(":")));
-
-        if(intervalsSharedPref.equals("0")||intervalsSharedPref.equals("")){
-            GlobalValues.SharedPreferenceSave(SP_INTERVAL_TAG,DEFAULT_INTERVALS);
-            intervalsSharedPref=GlobalValues.SharedPreferenceLoad(SP_INTERVAL_TAG);
-        }
         intervals = new ArrayList<>(Arrays.asList(intervalsSharedPref.split("\\|")));
-
     }
 
     private void refreshSourceSPreference(){
@@ -197,8 +178,7 @@ public class StatisticSettingActivity extends AppCompatActivity implements
             }
             i++;
         }
-        GlobalValues.SharedPreferenceSave(SP_SOURCE_TAG,temp);
-        Log.i("asdsg",temp);
+        ConstantAndHelp.SharedPreferenceSave(SP_SOURCE_TAG,temp);
     }
 
     private void refreshIntervalSPreference(){
@@ -212,7 +192,7 @@ public class StatisticSettingActivity extends AppCompatActivity implements
             }
             i++;
         }
-        GlobalValues.SharedPreferenceSave(SP_INTERVAL_TAG,temp);
+        ConstantAndHelp.SharedPreferenceSave(SP_INTERVAL_TAG,temp);
         Log.i("asdsg",temp);
     }
 

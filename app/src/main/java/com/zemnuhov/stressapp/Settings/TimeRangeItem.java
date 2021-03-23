@@ -53,60 +53,57 @@ public class TimeRangeItem extends Fragment implements DialogSourcesInRanges.Dia
         return fragment;
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.settings_time_interval,container,false);
-        init(view);
-        fillingItem();
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteIntervalCallBack.deleteInterval(id);
-            }
-        });
-
-        addSourcesOfRange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogSourcesInRanges dialog=DialogSourcesInRanges.newInstance(title);
-                dialog.registerCallback(TimeRangeItem.this::dialogCallback);
-                dialog.show(getFragmentManager(),"ADD_DIALOG");
-            }
-        });
-        return view;
-    }
-
-    @Override
-    public void dialogCallback(String firstSources, String secondSources) {
-        if(sourcesInRanges.size()>0) {
-            sourcesInRanges.set(0, firstSources);
-            sourcesInRanges.set(1, secondSources);
-        }else {
-            sourcesInRanges.add(firstSources);
-            sourcesInRanges.add(secondSources);
-        }
-        addingSources(sourcesInRanges);
-        refreshCallBack.refresh();
-    }
-
-    public Integer getIdItem(){
-        return id;
-    }
-
     interface DeleteIntervalCallBack{
 
-
-        public void deleteInterval(Integer id);
+        void deleteInterval(Integer id);
     }
+
     public void registerCallback(DeleteIntervalCallBack callBack){
         this.deleteIntervalCallBack =callBack;
     }
 
     interface RefreshCallBack{
+
         void refresh();
     }
+
     public void registerCallback(RefreshCallBack callBack){
         this.refreshCallBack =callBack;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container
+            , Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.settings_time_interval,container,false);
+        init(view);
+        fillingItem();
+        clickListeners();
+        return view;
+    }
+
+    private void init(View view){
+        titleView =view.findViewById(R.id.time_range_title);
+        bHourView =view.findViewById(R.id.edit_begin_hour);
+        bMinuteView =view.findViewById(R.id.edit_begin_minute);
+        eHourView =view.findViewById(R.id.edit_end_hour);
+        eMinuteView =view.findViewById(R.id.edit_end_minute);
+        deleteButton=view.findViewById(R.id.delete_interval);
+        addSourcesOfRange=view.findViewById(R.id.add_sources_of_interval);
+        sources=view.findViewById(R.id.sources_in_range);
+        textChangedListeners();
+    }
+
+    private void clickListeners(){
+        deleteButton.setOnClickListener(v -> deleteIntervalCallBack.deleteInterval(id));
+        addSourcesOfRange.setOnClickListener(v -> {
+            DialogSourcesInRanges dialog=DialogSourcesInRanges.newInstance(title);
+            dialog.registerCallback(TimeRangeItem.this::dialogCallback);
+            dialog.show(getFragmentManager(),"ADD_DIALOG");
+        });
+    }
+
+    public Integer getIdItem(){
+        return id;
     }
 
     private void fillingItem(){
@@ -120,16 +117,7 @@ public class TimeRangeItem extends Fragment implements DialogSourcesInRanges.Dia
         }
     }
 
-    private void init(View view){
-        titleView =view.findViewById(R.id.time_range_title);
-        bHourView =view.findViewById(R.id.edit_begin_hour);
-        bMinuteView =view.findViewById(R.id.edit_begin_minute);
-        eHourView =view.findViewById(R.id.edit_end_hour);
-        eMinuteView =view.findViewById(R.id.edit_end_minute);
-        deleteButton=view.findViewById(R.id.delete_interval);
-        addSourcesOfRange=view.findViewById(R.id.add_sources_of_interval);
-        sources=view.findViewById(R.id.sources_in_range);
-
+    private void textChangedListeners(){
         bHourView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -217,7 +205,6 @@ public class TimeRangeItem extends Fragment implements DialogSourcesInRanges.Dia
             if(getResources().getDisplayMetrics().xdpi>=320&&getResources().getDisplayMetrics().xdpi<380){
                 textView.setTextSize(8.4F);
             }
-            Log.i("LLLLL",String.valueOf(getResources().getDisplayMetrics().xdpi));
             sources.addView(textView);
         }
     }
@@ -231,5 +218,18 @@ public class TimeRangeItem extends Fragment implements DialogSourcesInRanges.Dia
             }
         }
         return item;
+    }
+
+    @Override
+    public void dialogCallback(String firstSources, String secondSources) {
+        if(sourcesInRanges.size()>0) {
+            sourcesInRanges.set(0, firstSources);
+            sourcesInRanges.set(1, secondSources);
+        }else {
+            sourcesInRanges.add(firstSources);
+            sourcesInRanges.add(secondSources);
+        }
+        addingSources(sourcesInRanges);
+        refreshCallBack.refresh();
     }
 }

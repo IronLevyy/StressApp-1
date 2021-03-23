@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.zemnuhov.stressapp.DataBase.DataBaseClass;
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.R;
 import com.zemnuhov.stressapp.Settings.StatisticSettingActivity;
 
@@ -30,7 +30,7 @@ public class NotificationClass {
 
 
     public Notification getForegroundNotification(){
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(GlobalValues.getContext(), FOREGROUND_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ConstantAndHelp.getContext(), FOREGROUND_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_self_improvement_24)
                 .setContentTitle("Мы следим за вашим состоянием")
                 .setContentText("Соединение с устройством установлено");
@@ -48,7 +48,7 @@ public class NotificationClass {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(id, id, importance);
             channel.setDescription(id);
-            NotificationManager notificationManager = GlobalValues.getContext().getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = ConstantAndHelp.getContext().getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
@@ -59,14 +59,14 @@ public class NotificationClass {
         Receiver.tonicAvg=tonicAvg;
         Receiver.time=time;
 
-        Intent snoozeIntent = new Intent(GlobalValues.getContext(), Receiver.class);
+        Intent snoozeIntent = new Intent(ConstantAndHelp.getContext(), Receiver.class);
         snoozeIntent.setAction(ACTION_SNOOZE);
         snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, "default");
-        PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(GlobalValues.getContext(),
+        PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(ConstantAndHelp.getContext(),
                 1,snoozeIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
-                GlobalValues.getContext(), FRONT_CHANNEL_ID)
+                ConstantAndHelp.getContext(), FRONT_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_self_improvement_24)
                 .setContentTitle("Обнаружен повышенный стресс")
                 .setContentText("Количество пиков привысило норму на "
@@ -78,7 +78,7 @@ public class NotificationClass {
                         ,"Указать источник стресса"
                         ,snoozePendingIntent);
         NotificationManagerCompat notificationManagerCompat =
-                NotificationManagerCompat.from(GlobalValues.getContext());
+                NotificationManagerCompat.from(ConstantAndHelp.getContext());
 
         createNotificationChannel(FRONT_CHANNEL_ID);
         notificationManagerCompat.notify(101, builder.build());
@@ -89,9 +89,9 @@ public class NotificationClass {
         Receiver.peaksCount=peaksCount;
         Receiver.tonicAvg=tonicAvg;
         Receiver.time=time;
-        Intent firstSourceIntent = new Intent(GlobalValues.getContext(), Receiver.class);
-        Intent secondSourceIntent = new Intent(GlobalValues.getContext(), Receiver.class);
-        Intent defaultIntent = new Intent(GlobalValues.getContext(), Receiver.class);
+        Intent firstSourceIntent = new Intent(ConstantAndHelp.getContext(), Receiver.class);
+        Intent secondSourceIntent = new Intent(ConstantAndHelp.getContext(), Receiver.class);
+        Intent defaultIntent = new Intent(ConstantAndHelp.getContext(), Receiver.class);
 
 
         firstSourceIntent.setAction(ACTION_SNOOZE);
@@ -106,23 +106,23 @@ public class NotificationClass {
 
 
         PendingIntent firstSourcePendingIntent = PendingIntent.getBroadcast(
-                GlobalValues.getContext()
+                ConstantAndHelp.getContext()
                 , 1
                 ,firstSourceIntent
                 ,PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent secondSourcePendingIntent = PendingIntent.getBroadcast(
-                GlobalValues.getContext()
+                ConstantAndHelp.getContext()
                 , 2
                 ,secondSourceIntent
                 ,PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent defaultPendingIntent = PendingIntent.getBroadcast(
-                GlobalValues.getContext()
+                ConstantAndHelp.getContext()
                 , 3
                 ,defaultIntent
                 ,PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(GlobalValues.getContext(), FRONT_CHANNEL_ID)
+                new NotificationCompat.Builder(ConstantAndHelp.getContext(), FRONT_CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_baseline_self_improvement_24)
                         .setContentTitle("Обнаружен повышенный стресс")
                         .setContentText("Количество пиков привысило норму на "
@@ -138,7 +138,7 @@ public class NotificationClass {
 
 
         NotificationManagerCompat notificationManagerCompat =
-                NotificationManagerCompat.from(GlobalValues.getContext());
+                NotificationManagerCompat.from(ConstantAndHelp.getContext());
 
         createNotificationChannel(FRONT_CHANNEL_ID);
         notificationManagerCompat.notify(101, builder.build());
@@ -167,14 +167,14 @@ public class NotificationClass {
                         ,peaksCount
                         ,tonicAvg);
             }else {
-                Intent intentDefault=new Intent(GlobalValues.getContext()
+                Intent intentDefault=new Intent(ConstantAndHelp.getContext()
                         , StatisticSettingActivity.class);
                 intentDefault.putExtra("TIME_IN_INTENT",time);
                 intentDefault.putExtra("PEAKS_COUNT_IN_INTENT",peaksCount);
                 intentDefault.putExtra("TONIC_AVG_IN_INTENT",tonicAvg);
                 intentDefault.setFlags(
                         Intent.FLAG_ACTIVITY_NEW_TASK);
-                GlobalValues.getContext().startActivity(intentDefault);
+                ConstantAndHelp.getContext().startActivity(intentDefault);
             }
 
         }

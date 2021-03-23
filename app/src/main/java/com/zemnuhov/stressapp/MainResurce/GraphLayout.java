@@ -37,6 +37,15 @@ public class GraphLayout extends Fragment {
         return fragment;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.main_graph_layout,container,false);
+        mainGraph=view.findViewById(R.id.graph_main);
+        init();
+        return view;
+    }
+
     private void init(){
         mainGraph.addSeries(seriesNormal);
         mainGraph.addSeries(seriesPeaks);
@@ -75,15 +84,5 @@ public class GraphLayout extends Fragment {
         }
         seriesNormal.appendData(new DataPoint(time,value),true,1000000);
 
-    }
-
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.main_graph_layout,container,false);
-        mainGraph=view.findViewById(R.id.graph_main);
-        init();
-        return view;
     }
 }

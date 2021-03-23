@@ -12,26 +12,22 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.zemnuhov.stressapp.BLE.BluetoothLeService;
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class BleServiceAdapter {
-    private String addressDevice;
-    private Context context= GlobalValues.getContext();
+    private final String addressDevice;
+    private final Context context= ConstantAndHelp.getContext();
     private BluetoothLeService bluetoothLeService;
     private Boolean connectedService = false;
     private Boolean connectedDevice = false;
     private BluetoothGattCharacteristic characteristic;
     private BluetoothGattCharacteristic notifyCharacteristic;
     private CallBack callback;
-
-    private Intent gattServiceIntent;
 
 
     public interface CallBack{
@@ -97,12 +93,15 @@ public class BleServiceAdapter {
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 connectedDevice = true;
                 Double value=intent.getDoubleExtra(BluetoothLeService.CLEAR_DATA,0);
-                Double rezultPhasic=intent.getDoubleExtra(BluetoothLeService.PHASIC_DATA,-1000);
+                Double resultPhasic=
+                        intent.getDoubleExtra(BluetoothLeService.PHASIC_DATA,-1000);
                 Long time=intent.getLongExtra(BluetoothLeService.NOW_TIME,0);
-                Boolean isPeaks=intent.getBooleanExtra(BluetoothLeService.IS_PEAKS,false);
-                Boolean isTonic=intent.getBooleanExtra(BluetoothLeService.IS_TONIC,false);
-                if(rezultPhasic!=null){
-                    callback.callingBack(rezultPhasic,value,time,isPeaks,isTonic);
+                Boolean isPeaks=
+                        intent.getBooleanExtra(BluetoothLeService.IS_PEAKS,false);
+                Boolean isTonic=
+                        intent.getBooleanExtra(BluetoothLeService.IS_TONIC,false);
+                if(resultPhasic!=null){
+                    callback.callingBack(resultPhasic,value,time,isPeaks,isTonic);
                 }
 
             }
@@ -113,7 +112,9 @@ public class BleServiceAdapter {
         UUID uuidValue=UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
         for(BluetoothGattService service:gattServices){
             if(service.getUuid().equals(uuidValue)){
-                characteristic = service.getCharacteristic(UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb"));
+                characteristic = service.getCharacteristic(
+                        UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
+                );
             }
         }
 
@@ -123,7 +124,8 @@ public class BleServiceAdapter {
         final int charaProp = characteristic.getProperties();
         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0 ) {
             if (notifyCharacteristic != null) {
-                bluetoothLeService.setCharacteristicNotification(notifyCharacteristic, false);
+                bluetoothLeService.setCharacteristicNotification(notifyCharacteristic,
+                        false);
                 notifyCharacteristic = null;
             }
             bluetoothLeService.readCharacteristic(characteristic);
@@ -144,7 +146,7 @@ public class BleServiceAdapter {
     }
 
     public void connectedService(){
-        gattServiceIntent = new Intent(context, BluetoothLeService.class);
+        Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(gattServiceIntent);
         }else {

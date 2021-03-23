@@ -32,8 +32,7 @@ public class StatisticActivity extends AppCompatActivity {
     private ArrayList<TenMinuteObjectDB> tenMinuteObjectDB;
     private DataBaseClass dataBase;
     private LinearLayout scrollView;
-
-    Date dayBegin=new Date();
+    private Date dayBegin=new Date();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,9 +59,6 @@ public class StatisticActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().add(scrollView.getId(), statisticItem).commit();
             }
         }
-
-
-
     }
 
     private void fillingBarAndLineChart(){
@@ -99,17 +95,14 @@ public class StatisticActivity extends AppCompatActivity {
         }
         barSeries.setSpacing(1);
         barSeries.setDataWidth(500000);
-        barSeries.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-            @Override
-            public int get(DataPoint data) {
-                if(data.getY()<23){
-                    return getResources().getColor(R.color.green_active);
-                }
-                if(data.getY()>=23 && data.getY()<=30){
-                    return getResources().getColor(R.color.yellow_active);
-                }
-                return getResources().getColor(R.color.red_active);
+        barSeries.setValueDependentColor(data -> {
+            if(data.getY()<23){
+                return getResources().getColor(R.color.green_active);
             }
+            if(data.getY()>=23 && data.getY()<=30){
+                return getResources().getColor(R.color.yellow_active);
+            }
+            return getResources().getColor(R.color.red_active);
         });
         barChart.addSeries(barSeries);
         barChart.addSeries(lineSeries);

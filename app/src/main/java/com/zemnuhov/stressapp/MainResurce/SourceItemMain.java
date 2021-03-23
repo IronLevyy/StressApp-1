@@ -29,18 +29,17 @@ public class SourceItemMain extends Fragment {
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.main_statistic_lable_sources,container,false);
+    public View onCreateView(LayoutInflater inflater,  ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.main_statistic_lable_sources,container,
+                false);
         colorView=view.findViewById(R.id.image_color_sources);
         sourceView=view.findViewById(R.id.name_sources);
         countView=view.findViewById(R.id.count_sources_statistic);
-
         colorView.setColorFilter(color);
         sourceView.setText(source);
         countView.setText(count.toString());
-
         return view;
     }
 }

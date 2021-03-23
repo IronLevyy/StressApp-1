@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.R;
 
 public class DialogSourcesInRanges extends DialogFragment {
@@ -42,7 +42,6 @@ public class DialogSourcesInRanges extends DialogFragment {
         this.callBack=callBack;
     }
 
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
@@ -52,14 +51,19 @@ public class DialogSourcesInRanges extends DialogFragment {
         firstSpinner=view.findViewById(R.id.first_spinner);
         secondSpinner=view.findViewById(R.id.second_spinner);
         button=view.findViewById(R.id.dialog_button);
-
-        String[] sources=GlobalValues.SharedPreferenceLoad(SP_SOURCE_TAG).split(":");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item,sources);
+        String[] sources= ConstantAndHelp.SharedPreferenceLoad(SP_SOURCE_TAG).split(":");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                R.layout.support_simple_spinner_dropdown_item,sources);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         titleView.setText(title);
         firstSpinner.setAdapter(adapter);
+        secondSpinner.setAdapter(adapter);
+        clickListeners();
+        builder.setView(view);
+        return builder.create();
+    }
+
+    private void clickListeners(){
         firstSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -71,7 +75,6 @@ public class DialogSourcesInRanges extends DialogFragment {
 
             }
         });
-        secondSpinner.setAdapter(adapter);
         secondSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -83,16 +86,9 @@ public class DialogSourcesInRanges extends DialogFragment {
 
             }
         });
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callBack.dialogCallback(firstSpinnerResult,secondSpinnerResult);
-                dismiss();
-            }
+        button.setOnClickListener(v -> {
+            callBack.dialogCallback(firstSpinnerResult,secondSpinnerResult);
+            dismiss();
         });
-
-
-        builder.setView(view);
-        return builder.create();
     }
 }

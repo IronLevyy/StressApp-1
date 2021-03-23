@@ -21,7 +21,8 @@ public class ParsingSPref {
         ArrayList<String> items=new ArrayList<>(Arrays.asList(data.split("\\|")));
         for(String item:items){
             ArrayList<String> dataInItems=new ArrayList<>(Arrays.asList(item.split("_")));
-            ArrayList<String> itemTime=new ArrayList<>(Arrays.asList(dataInItems.get(1).split("-")));
+            ArrayList<String> itemTime=new ArrayList<>(
+                    Arrays.asList(dataInItems.get(1).split("-")));
             if(dataInItems.size()>2){
                 itemTime.add(dataInItems.get(2));
                 itemTime.add(dataInItems.get(3));

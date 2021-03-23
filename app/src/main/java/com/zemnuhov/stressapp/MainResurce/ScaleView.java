@@ -37,6 +37,15 @@ public class ScaleView extends Fragment {
         return fragment;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container
+            , Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.custom_scale,container,false);
+        init(view);
+        return view;
+
+    }
+
     private void init(View view){
         linearsStates=new HashMap<>();
         val1000g=view.findViewById(R.id.val_1000);
@@ -81,21 +90,14 @@ public class ScaleView extends Fragment {
                 getResources().getColor(R.color.red_active))));
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.custom_scale,container,false);
-        init(view);
-        return view;
-
-    }
-
     private void activated(LinearLayoutCompat linear){
         linear.setBackgroundColor(linearsStates.get(linear).get(1));
     }
+
     private void deactivated(LinearLayoutCompat linear) {
         linear.setBackgroundColor(linearsStates.get(linear).get(0));
     }
+
     private void conditions(Integer value, Integer border, LinearLayoutCompat linear){
         if(value>border){
             activated(linear);

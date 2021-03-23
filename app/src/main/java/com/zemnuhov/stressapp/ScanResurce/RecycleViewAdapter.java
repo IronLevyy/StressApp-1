@@ -8,14 +8,13 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.MainResurce.MainFragment;
 import com.zemnuhov.stressapp.R;
 
 import java.util.List;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.DeviceViewHolder> {
-
     List<Device> devices;
 
     RecycleViewAdapter(List<Device> devices){
@@ -24,23 +23,21 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @Override
     public DeviceViewHolder onCreateViewHolder( ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_card_layout,parent,false);
-        DeviceViewHolder deviceViewHolder=new DeviceViewHolder(view);
-        return deviceViewHolder;
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_card_layout,
+                parent,false);
+        return new DeviceViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder( DeviceViewHolder holder, int position) {
         holder.deviceMAC.setText(devices.get(position).MAC);
         holder.nameDevice.setText(devices.get(position).Name);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GlobalValues.getFragmentManager().beginTransaction().
-                        replace(R.id.fragment_container, MainFragment.newInstance(devices.get(position).MAC)).
-                        commit();
-                GlobalValues.saveDevice(devices.get(position).MAC);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            ConstantAndHelp.getFragmentManager().beginTransaction().
+                    replace(R.id.fragment_container,
+                            MainFragment.newInstance(devices.get(position).MAC)).
+                    commit();
+            ConstantAndHelp.saveDevice(devices.get(position).MAC);
         });
     }
 

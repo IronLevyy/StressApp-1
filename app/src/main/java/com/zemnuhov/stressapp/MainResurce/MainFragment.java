@@ -10,7 +10,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.zemnuhov.stressapp.BLE.BleServiceAdapter;
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.R;
 import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
@@ -29,6 +29,16 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
         MainFragment fragment = new MainFragment();
         fragment.addressDevice =addressDevice;
         return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container
+            , Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.main_fragment,container,false);
+        ConstantAndHelp.getMainMenu().setVisible(false);
+        init();
+
+        return view;
     }
 
     private void initItem(){
@@ -50,36 +60,22 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
                 commit();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.main_fragment,container,false);
-        GlobalValues.getMainMenu().setVisible(false);
-        init();
-
-        return view;
-    }
-
     private void init(){
         initItem();
         bleServiceAdapter=new BleServiceAdapter(addressDevice);
         bleServiceAdapter.registerCallBack(this::callingBack);
-        Thread thread=new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if(!bleServiceAdapter.getConnectedDevice()){
-                    GlobalValues.getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, ScanFragment.newInstance()).
-                            commit();
-                    Toast.makeText(getContext(),
-                            "Подключение не удалось.\nПроверьте включено ли устройство.",
-                            Toast.LENGTH_LONG).show();
-
-                }
+        Thread thread=new Thread(() -> {
+            if(!bleServiceAdapter.getConnectedDevice()){
+                ConstantAndHelp.getFragmentManager().beginTransaction().
+                        replace(R.id.fragment_container, ScanFragment.newInstance()).
+                        commit();
+                Toast.makeText(getContext(),
+                        "Подключение не удалось.\nПроверьте включено ли устройство.",
+                        Toast.LENGTH_LONG).show();
             }
         });
         handler.postDelayed(thread,5000);
     }
-
 
     @Override
     public void callingBack(Double valuePhasic, Double valueTonic,
@@ -101,7 +97,6 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
     public void onStop() {
         super.onStop();
         bleServiceAdapter.disconnectedService();
-
     }
 
     @Override

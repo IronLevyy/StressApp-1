@@ -34,21 +34,21 @@
                 android:layout_height="wrap_content"
                 android:text="День"
                 android:textStyle="bold"
-                android:textSize="15sp"
+                android:textSize="@dimen/statistic_text_size"
                 android:layout_margin="@dimen/margin_16"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Месяц"
                 android:textStyle="bold"
-                android:textSize="15sp"
+                android:textSize="@dimen/statistic_text_size"
                 android:layout_margin="@dimen/margin_16"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Год"
                 android:textStyle="bold"
-                android:textSize="15sp"
+                android:textSize="@dimen/statistic_text_size"
                 android:layout_margin="@dimen/margin_16"/>
         </LinearLayout>
         <ScrollView

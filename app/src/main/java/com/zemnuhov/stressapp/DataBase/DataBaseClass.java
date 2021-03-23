@@ -2,12 +2,11 @@ package com.zemnuhov.stressapp.DataBase;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.zemnuhov.stressapp.GlobalValues;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.Settings.ParsingSPref;
 
 import java.text.ParseException;
@@ -20,12 +19,11 @@ import java.util.HashMap;
 
 public class DataBaseClass {
     
-    CallbackRefreshStatistic callback;
-    DBHelper dbHelper;
-    CallBackRefreshGraph callBackGraph;
+    private CallbackRefreshStatistic callback;
+    private DBHelper dbHelper;
 
     public DataBaseClass(){
-        dbHelper = new DBHelper(GlobalValues.getContext());
+        dbHelper = new DBHelper(ConstantAndHelp.getContext());
     }
 
     public interface CallbackRefreshStatistic{
@@ -36,13 +34,6 @@ public class DataBaseClass {
         this.callback=callback;
     }
 
-    public interface CallBackRefreshGraph{
-        void refreshGraph();
-    }
-
-    public void registerGraphCallback(CallBackRefreshGraph callBack){
-        this.callBackGraph=callBack;
-    }
 
     public void addPeak(Long time,Double max){
         Thread thread=new Thread(new Runnable() {
@@ -139,7 +130,8 @@ public class DataBaseClass {
         Integer count=0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ArrayList<Double> valArray=new ArrayList<>();
-        Cursor c = db.query("Result", null, null, null, null, null, null);
+        Cursor c = db.query("Result", null, null, null,
+                null, null, null);
         if (c.moveToFirst()) {
             int timeColIndex = c.getColumnIndex("time");
             int valColIndex = c.getColumnIndex("value");
@@ -182,7 +174,7 @@ public class DataBaseClass {
     public HashMap<String,Integer> readSourcesDB(){
         HashMap<String,Integer> sourcesCount=new HashMap<>();
         ArrayList<String> sourcesActive=new ArrayList<>(Arrays.asList(
-                GlobalValues.SharedPreferenceLoad(ParsingSPref.SP_SOURCE_TAG)
+                ConstantAndHelp.SharedPreferenceLoad(ParsingSPref.SP_SOURCE_TAG)
                         .split(":")));
         for(String item:sourcesActive){
             sourcesCount.put(item,0);
@@ -236,7 +228,6 @@ public class DataBaseClass {
         return result/list.size();
     }
 
-
     public void addTenMinuteLine(Long time,Integer peaks){
         Integer tonic=readAvgTonic(600000L);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -246,15 +237,14 @@ public class DataBaseClass {
         cv.put("tonic", tonic);
         long rowID = db.insert("TenMinuteRecordings", null, cv);
         dbHelper.close();
-        callBackGraph.refreshGraph();
 
     }
 
     public ArrayList<TenMinuteObjectDB> readTenMinuteTable(){
-        Integer count=0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ArrayList<TenMinuteObjectDB> array=new ArrayList<>();
-        Cursor c = db.query("TenMinuteRecordings", null, null, null, null, null, null);
+        Cursor c = db.query("TenMinuteRecordings", null, null,
+                null, null, null, null);
         if (c.moveToFirst()) {
             int timeColIndex = c.getColumnIndex("time");
             int peaksColIndex = c.getColumnIndex("peaksCount");
@@ -272,7 +262,8 @@ public class DataBaseClass {
                 }
 
                 if(readingDate.getTime().getTime()<c.getLong(timeColIndex)){
-                    array.add(new TenMinuteObjectDB(c.getLong(timeColIndex),c.getInt(peaksColIndex),c.getDouble(tonicColIndex)));
+                    array.add(new TenMinuteObjectDB(c.getLong(timeColIndex),
+                            c.getInt(peaksColIndex),c.getDouble(tonicColIndex)));
                 }
 
             } while (c.moveToNext());
@@ -292,7 +283,8 @@ public class DataBaseClass {
     class DBHelper extends SQLiteOpenHelper {
 
         public DBHelper(Context context) {
-            super(context, "myDBPeaks", null, 1);
+            super(context, "myDBPeaks",
+                    null, 1);
         }
 
         @Override
