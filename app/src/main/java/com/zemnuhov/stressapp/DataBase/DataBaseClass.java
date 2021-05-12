@@ -17,10 +17,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-public class DataBaseClass {
+public class DataBaseClass{
     
     private CallbackRefreshStatistic callback;
     private DBHelper dbHelper;
+    public static int mutex=0;
 
     public DataBaseClass(){
         dbHelper = new DBHelper(ConstantAndHelp.getContext());
@@ -110,20 +111,25 @@ public class DataBaseClass {
     public Integer readCountPeak(Long range){
         Integer count=0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor c = db.query("Peaks", null, null, null, null, null, null);
-        Calendar calendar = Calendar.getInstance();
-        Date time = calendar.getTime();
-        if (c.moveToFirst()) {
-            int timeColIndex = c.getColumnIndex("time");
-            do {
-                if(time.getTime()-range<c.getLong(timeColIndex)){
-                    count++;
-                }
-            } while (c.moveToNext());
-        } else
-            c.close();
-        dbHelper.close();
-        return count;
+        if(db.isOpen()&&mutex==0) {
+            mutex=1;
+            Cursor c = db.query("Peaks", null, null, null, null, null, null);
+            Calendar calendar = Calendar.getInstance();
+            Date time = calendar.getTime();
+            if (c.moveToFirst()) {
+                int timeColIndex = c.getColumnIndex("time");
+                do {
+                    if (time.getTime() - range < c.getLong(timeColIndex)) {
+                        count++;
+                    }
+                } while (c.moveToNext());
+            } else
+                c.close();
+            dbHelper.close();
+            mutex=0;
+            return count;
+        }
+        return null;
     }
 
     public Integer readResultDayLine(Long range){

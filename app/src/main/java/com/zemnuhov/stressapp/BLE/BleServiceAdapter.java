@@ -1,6 +1,7 @@
 package com.zemnuhov.stressapp.BLE;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -9,10 +10,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.zemnuhov.stressapp.ConstantAndHelp;
+import com.zemnuhov.stressapp.R;
+import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +33,7 @@ public class BleServiceAdapter {
     private BluetoothGattCharacteristic characteristic;
     private BluetoothGattCharacteristic notifyCharacteristic;
     private CallBack callback;
+    private Handler handler = new Handler();
 
 
     public interface CallBack{
@@ -154,5 +160,14 @@ public class BleServiceAdapter {
         }
         context.bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
         context.registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
+
+        Thread thread=new Thread(() -> {
+            bluetoothLeService.applicationStart();
+        });
+        handler.postDelayed(thread,5000);
+
+
     }
+
+
 }

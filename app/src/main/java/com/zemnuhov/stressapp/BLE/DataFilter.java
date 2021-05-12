@@ -14,19 +14,19 @@ public class DataFilter {
     }
 
     public Double filterData(Double value){
-        if(clearDataArray.size()<20){
+        if(clearDataArray.size()<30){
             clearDataArray.add(value);
         }
         else {
             if (helpPhasicArray.size() < 2) {
                 helpPhasicArray.add(avgList(clearDataArray));
             } else {
-                filterArray.add((helpPhasicArray.get(1) - helpPhasicArray.get(0)) / 4);
+                filterArray.add((helpPhasicArray.get(1) - helpPhasicArray.get(0)) / 2);
                 helpPhasicArray.remove(0);
-                if (filterArray.size() > 20) {
-                    Double rezult = avgList(filterArray);
+                if (filterArray.size() > 30) {
+                    Double result = avgList(filterArray);
                     filterArray.remove(0);
-                    return rezult;
+                    return result;
                 }
             }
             clearDataArray.remove(0);

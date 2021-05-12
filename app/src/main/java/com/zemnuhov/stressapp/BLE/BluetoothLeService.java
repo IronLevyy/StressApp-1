@@ -6,12 +6,14 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -20,6 +22,8 @@ import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.Notifications.NotificationClass;
 import com.zemnuhov.stressapp.Settings.ParsingSPref;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +33,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+
+import static android.bluetooth.BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
 
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
@@ -46,6 +53,15 @@ public class BluetoothLeService extends Service {
     private Long lastNotification;
     private ParsingSPref parsingSPref;
     private NotificationClass notification;
+    private Handler handler=new Handler();
+    private ArrayList<Double> dataArray;
+    private boolean isThreadActive=false;
+
+
+    BluetoothGattCharacteristic peaksCharacteristic;
+    BluetoothGattCharacteristic tonicCharacteristic;
+    BluetoothGattCharacteristic timeCharacteristic;
+
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -104,6 +120,7 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
@@ -124,6 +141,8 @@ public class BluetoothLeService extends Service {
         lastRecodingTonic=0L;
         lastNotification=0L;
         notification=new NotificationClass();
+        dataArray =new ArrayList<>();
+
         startForeground(100,notification.getForegroundNotification());
     }
 
@@ -139,26 +158,92 @@ public class BluetoothLeService extends Service {
 
     private void broadcastUpdate(final String action
             , final BluetoothGattCharacteristic characteristic) {
-
         final Intent intent = new Intent(action);
         final byte[] data = characteristic.getValue();
-        Calendar calendar = Calendar.getInstance();
-        Date time = calendar.getTime();
-        if (data != null && data.length > 0) {
-            String dataString=new String(data);
-            Double value=(Double.parseDouble(dataString)/1023) * 10000;
-            trainingIntent(value,intent,time);
-            peaksController(time,value);
+        Calendar calendar;
+        Date time;
+
+        for(int i=0;i<5;i++) {
+            ByteBuffer bb = ByteBuffer.wrap(data);
+            if (data != null && data.length > 0) {
+                Integer dataString = bb.getInt();
+                Double value = (dataString.doubleValue() / 1023) * 10000;
+                calendar = Calendar.getInstance();
+                time = calendar.getTime();
+                trainingIntent(value, intent, time);
+                peaksController(time, value);
+
+            }
+            sendBroadcast(intent);
         }
-        sendBroadcast(intent);
-        cleaningDB(time);
+        cleaningDB(new Date());
+    }
+
+    private void initCharacteristic(){
+        UUID uuidValue=UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
+        for(BluetoothGattService s:bluetoothGatt.getServices()){
+            if(s.getUuid().equals(uuidValue)){
+                peaksCharacteristic = s.getCharacteristic(UUID.fromString("0000ffe2-0000-1000-8000-00805f9b34fb"));
+                tonicCharacteristic = s.getCharacteristic(UUID.fromString("0000ffe3-0000-1000-8000-00805f9b34fb"));
+                timeCharacteristic = s.getCharacteristic(UUID.fromString("0000ffe4-0000-1000-8000-00805f9b34fb"));
+            }
+        }
+
+    }
+
+    private void sleepThread(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void applicationStart(){
+        Thread sendDataThread=new Thread(()->{
+            sleepThread(3000);
+            DataBaseClass db=new DataBaseClass();
+            int count=db.readCountPeak(600000L);
+            int tonicAvg=db.readAvgTonic(600000L);
+
+            peaksCharacteristic.setValue(count,BluetoothGattCharacteristic.FORMAT_UINT16,0);
+            bluetoothGatt.writeCharacteristic(peaksCharacteristic);
+
+            sleepThread(3000);
+
+            tonicCharacteristic.setValue(tonicAvg,BluetoothGattCharacteristic.FORMAT_UINT16,0);
+            bluetoothGatt.writeCharacteristic(tonicCharacteristic);
+
+            sleepThread(10000);
+
+            SimpleDateFormat nowTime = new SimpleDateFormat("HH:mm:ss");
+            String timeString=nowTime.format(new Date().getTime()+10000);
+
+            for(String a:timeString.split("")){
+
+                byte[] f= new byte[0];
+                try {
+                    f = a.getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                timeCharacteristic.setValue(f);
+                timeCharacteristic.setWriteType(WRITE_TYPE_NO_RESPONSE);
+                bluetoothGatt.writeCharacteristic(timeCharacteristic);
+                sleepThread(1000);
+            }
+            Log.i("TimeCorrect","Complete");
+
+        });
+        sendDataThread.start();
     }
 
     private void peaksController(Date time,Double value){
-        SimpleDateFormat formatForDateNow = new SimpleDateFormat("mm");
-        if(formatForDateNow.format(time).substring(1).equals("0")){
+        SimpleDateFormat minute = new SimpleDateFormat("mm");
+        if(minute.format(time).substring(1).equals("0")){
             if(new Date().getTime()-lastNotification>500000) {
                 int count=dataBase.readCountPeak(600000L);
+                applicationStart();
                 lastNotification = new Date().getTime();
                 dataBase.addTenMinuteLine(time.getTime(),count);
                 if (count > 30){
@@ -211,6 +296,7 @@ public class BluetoothLeService extends Service {
                 intent.putExtra(BluetoothLeService.IS_TONIC, true);
             }
         }
+
         intent.putExtra(BluetoothLeService.CLEAR_DATA,value);
         intent.putExtra(BluetoothLeService.PHASIC_DATA,phasicValue);
         intent.putExtra(BluetoothLeService.NOW_TIME,time.getTime());
@@ -303,6 +389,7 @@ public class BluetoothLeService extends Service {
         Log.d(TAG, "Trying to create a new connection.");
         bluetoothDeviceAddress = address;
         connectionState = STATE_CONNECTING;
+
         return true;
     }
 
@@ -328,6 +415,11 @@ public class BluetoothLeService extends Service {
             return;
         }
         bluetoothGatt.readCharacteristic(characteristic);
+        bluetoothGatt.setCharacteristicNotification(characteristic, true);
+        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
+        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+        boolean success = bluetoothGatt.writeDescriptor(descriptor);
+        initCharacteristic();
     }
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
@@ -337,6 +429,7 @@ public class BluetoothLeService extends Service {
             return;
         }
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+
 
     }
 

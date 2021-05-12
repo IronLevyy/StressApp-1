@@ -155,8 +155,11 @@ public class PeaksLayout extends Fragment {
     public void refreshPeaks(){
         Thread thread=new Thread(() -> {
             int position=timesRanges.indexOf(timeRange.getText().toString());
-            int peaks= dataBase.readCountPeak(timesRangesMillisecond.get(position));
-            peaksCounter.setText(String.valueOf(peaks));
+            Integer peaks= dataBase.readCountPeak(timesRangesMillisecond.get(position));
+            if(peaks!=null) {
+                peaksCounter.setText(String.valueOf(peaks));
+            }
+            this.thread.interrupt();
         });
         thread.start();
     }
