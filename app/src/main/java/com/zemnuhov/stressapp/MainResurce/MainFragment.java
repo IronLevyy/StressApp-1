@@ -18,7 +18,8 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
 
 
     private BleServiceAdapter bleServiceAdapter;
-    private GraphLayout graphLayout;
+    private PhasicGraphLayout phasicGraphLayout;
+    private TonicGraphLayout tonicGraphLayout;
     private CurrentAndAvgLayout currentAndAvgLayout;
     private PeaksLayout peaksLayout;
     private StatisticLayout statisticLayout;
@@ -42,12 +43,15 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
     }
 
     private void initItem(){
-        graphLayout=GraphLayout.newInstance();
+        phasicGraphLayout = PhasicGraphLayout.newInstance();
+        tonicGraphLayout = TonicGraphLayout.newInstance();
+        phasicGraphLayout.setSwappingGraph(tonicGraphLayout);
+        tonicGraphLayout.setSwappingGraph(phasicGraphLayout);
         currentAndAvgLayout=CurrentAndAvgLayout.newInstance();
         peaksLayout=PeaksLayout.newInstance();
         statisticLayout=StatisticLayout.newInstance();
         getChildFragmentManager().beginTransaction().
-                replace(R.id.graph_fragment_in_main, graphLayout).
+                replace(R.id.graph_fragment_in_main, phasicGraphLayout).
                 commit();
         getChildFragmentManager().beginTransaction().
                 replace(R.id.current_and_avg_layout, currentAndAvgLayout).
@@ -81,7 +85,8 @@ public class MainFragment extends Fragment implements BleServiceAdapter.CallBack
     public void callingBack(Double valuePhasic, Double valueTonic,
                             Long time,Boolean isPeaks,Boolean isTonic) {
         if(valuePhasic!=-1000 && time!=0) {
-            graphLayout.addLineSeriesValue(valuePhasic,time);
+            phasicGraphLayout.addLineSeriesValue(valuePhasic,time);
+            tonicGraphLayout.addLineSeriesValue(valueTonic,time);
         }
         if(isPeaks){
             peaksLayout.refreshPeaks();

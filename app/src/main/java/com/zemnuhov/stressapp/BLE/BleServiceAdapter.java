@@ -22,6 +22,7 @@ import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 import java.util.List;
 import java.util.UUID;
 
+import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class BleServiceAdapter {
@@ -107,7 +108,7 @@ public class BleServiceAdapter {
                 Boolean isTonic=
                         intent.getBooleanExtra(BluetoothLeService.IS_TONIC,false);
                 if(resultPhasic!=null){
-                    callback.callingBack(resultPhasic,value,time,isPeaks,isTonic);
+                    callback.callingBack(resultPhasic, value,time,isPeaks,isTonic);
                 }
 
             }
@@ -162,12 +163,15 @@ public class BleServiceAdapter {
         context.registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
 
         Thread thread=new Thread(() -> {
-            bluetoothLeService.applicationStart();
+            if (bluetoothLeService.isConnect()==STATE_CONNECTED) {
+                bluetoothLeService.applicationStart();
+            }
         });
         handler.postDelayed(thread,5000);
 
 
     }
+
 
 
 }

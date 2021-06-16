@@ -7,26 +7,31 @@ public class DataFilter {
     private ArrayList<Double> helpPhasicArray;
     private ArrayList<Double> clearDataArray;
 
+    private double[] resultArray;
+
     DataFilter(){
         filterArray=new ArrayList<>();
         helpPhasicArray=new ArrayList<>();
         clearDataArray=new ArrayList<>();
+        resultArray=new double[2];
     }
 
-    public Double filterData(Double value){
-        if(clearDataArray.size()<30){
+    public double[] filterData(Double value){
+        if(clearDataArray.size()<100){
             clearDataArray.add(value);
         }
         else {
             if (helpPhasicArray.size() < 2) {
-                helpPhasicArray.add(avgList(clearDataArray));
+                Double tonic=avgList(clearDataArray);
+                helpPhasicArray.add(tonic);
+                resultArray[0]=tonic;
             } else {
-                filterArray.add((helpPhasicArray.get(1) - helpPhasicArray.get(0)) / 2);
+                filterArray.add((helpPhasicArray.get(1) - helpPhasicArray.get(0)) /1);
                 helpPhasicArray.remove(0);
                 if (filterArray.size() > 30) {
-                    Double result = avgList(filterArray);
+                    resultArray[1]=avgList(filterArray);
                     filterArray.remove(0);
-                    return result;
+                    return resultArray;
                 }
             }
             clearDataArray.remove(0);

@@ -17,8 +17,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.zemnuhov.stressapp.DataBase.DataBaseClass;
+import com.zemnuhov.stressapp.DataBase.PeaksInDayDB;
+import com.zemnuhov.stressapp.DataBase.ResultInDayDB;
+import com.zemnuhov.stressapp.DataBase.TenMinuteInDayDB;
 import com.zemnuhov.stressapp.ConstantAndHelp;
+import com.zemnuhov.stressapp.DataBase.TenMinuteObjectDB;
+import com.zemnuhov.stressapp.DataBase.TonicInDayDB;
 import com.zemnuhov.stressapp.Notifications.NotificationClass;
 import com.zemnuhov.stressapp.Settings.ParsingSPref;
 
@@ -31,6 +35,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +53,6 @@ public class BluetoothLeService extends Service {
     private int connectionState = STATE_DISCONNECTED;
     private Boolean peaksFlag=false;
     private HashMap<Long,Double> peaksArray;
-    private DataBaseClass dataBase;
     private Long lastRecodingTonic;
     private Long lastNotification;
     private ParsingSPref parsingSPref;
@@ -56,6 +60,9 @@ public class BluetoothLeService extends Service {
     private Handler handler=new Handler();
     private ArrayList<Double> dataArray;
     private boolean isThreadActive=false;
+    private long lastCleaningDB=0;
+    double phasicValue=-100;
+    double tonicValue=-100;
 
 
     BluetoothGattCharacteristic peaksCharacteristic;
@@ -77,6 +84,8 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String CLEAR_DATA =
             "com.example.bluetooth.le.CLEAR_DATA";
+    public final static String TONIC_DATA =
+            "com.example.bluetooth.le.TONIC_DATA";
     public final static String PHASIC_DATA =
             "com.example.bluetooth.le.PHASIC_DATA";
     public final static String NOW_TIME =
@@ -104,7 +113,16 @@ public class BluetoothLeService extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
                 connectionState = STATE_DISCONNECTED;
+                notification.getDisconnectNotification();
                 Log.i(TAG, "Disconnected from GATT server.");
+                Thread connectThread=new Thread(()->{
+                    while (connectionState==STATE_DISCONNECTED){
+                        initialize();
+                        connect(ConstantAndHelp.loadDeviceAddress());
+                    }
+                });
+                connectThread.start();
+
                 broadcastUpdate(intentAction);
             }
         }
@@ -132,12 +150,15 @@ public class BluetoothLeService extends Service {
         }
     };
 
+    public int isConnect(){
+        return connectionState;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         dataFilter =new DataFilter();
         peaksArray=new HashMap<>();
-        dataBase=new DataBaseClass();
         lastRecodingTonic=0L;
         lastNotification=0L;
         notification=new NotificationClass();
@@ -162,7 +183,6 @@ public class BluetoothLeService extends Service {
         final byte[] data = characteristic.getValue();
         Calendar calendar;
         Date time;
-
         for(int i=0;i<5;i++) {
             ByteBuffer bb = ByteBuffer.wrap(data);
             if (data != null && data.length > 0) {
@@ -202,9 +222,10 @@ public class BluetoothLeService extends Service {
     public void applicationStart(){
         Thread sendDataThread=new Thread(()->{
             sleepThread(3000);
-            DataBaseClass db=new DataBaseClass();
-            int count=db.readCountPeak(600000L);
-            int tonicAvg=db.readAvgTonic(600000L);
+            PeaksInDayDB peaksInDayDB=new PeaksInDayDB();
+            TonicInDayDB tonicInDayDB=new TonicInDayDB();
+            int count=peaksInDayDB.readCountPeak(600000L);
+            int tonicAvg=tonicInDayDB.readAvgTonic(600000L);
 
             peaksCharacteristic.setValue(count,BluetoothGattCharacteristic.FORMAT_UINT16,0);
             bluetoothGatt.writeCharacteristic(peaksCharacteristic);
@@ -242,78 +263,101 @@ public class BluetoothLeService extends Service {
         SimpleDateFormat minute = new SimpleDateFormat("mm");
         if(minute.format(time).substring(1).equals("0")){
             if(new Date().getTime()-lastNotification>500000) {
-                int count=dataBase.readCountPeak(600000L);
-                applicationStart();
                 lastNotification = new Date().getTime();
-                dataBase.addTenMinuteLine(time.getTime(),count);
-                if (count > 30){
+                Thread thread=new Thread(()->{
+                    PeaksInDayDB peaksInDayDB=new PeaksInDayDB();
+                    Integer count= null;
+                    count = peaksInDayDB.readCountPeak(600000L);
+                    while (count==null);
+                    applicationStart();
+                    TenMinuteInDayDB tenMinuteInDayDB=new TenMinuteInDayDB();
+                    tenMinuteInDayDB.addTenMinuteLine(time.getTime(),count);
+                    if (count > 30){
                         parsingSPref =
                                 new ParsingSPref(ConstantAndHelp.SharedPreferenceLoad(
                                         ParsingSPref.SP_INTERVAL_TAG));
-                    ArrayList<ArrayList<String>> timeAndSources = parsingSPref.getTimesAndSources();
-                    boolean flagNotification=false;
-                    for (ArrayList<String> item : timeAndSources) {
-                        Calendar calendar = Calendar.getInstance();
-                        Date date = calendar.getTime();
-                        SimpleDateFormat formatter = new SimpleDateFormat("H:mm dd.MM.yyyy");
-                        SimpleDateFormat formatterDate = new SimpleDateFormat("dd.MM.yyyy");
-                        try {
-                            Date begin = formatter.parse(item.get(0) + " " + formatterDate.format(date));
-                            Date end = formatter.parse(item.get(1) + " " + formatterDate.format(date));
-                            if (time.after(begin) && time.before(end)) {
-                                if (item.size() > 2) {
-                                    notification.discoveredStressNotification(count
-                                            , value, time.getTime(), item.get(2), item.get(3));
-                                    flagNotification=true;
-                                } else {
+                        ArrayList<ArrayList<String>> timeAndSources = parsingSPref.getTimesAndSources();
+                        boolean flagNotification=false;
+                        for (ArrayList<String> item : timeAndSources) {
+                            Calendar calendar = Calendar.getInstance();
+                            Date date = calendar.getTime();
+                            SimpleDateFormat formatter = new SimpleDateFormat("H:mm dd.MM.yyyy");
+                            SimpleDateFormat formatterDate = new SimpleDateFormat("dd.MM.yyyy");
+                            try {
+                                Date begin = formatter.parse(item.get(0) + " " + formatterDate.format(date));
+                                Date end = formatter.parse(item.get(1) + " " + formatterDate.format(date));
+                                if (time.after(begin) && time.before(end)) {
+                                    if (item.size() > 2) {
+                                        notification.discoveredStressNotification(count
+                                                , value, time.getTime(), item.get(2), item.get(3));
+                                        flagNotification=true;
+                                    } else {
+                                        notification.discoveredStressNotification(count
+                                                , value, time.getTime());
+                                        flagNotification=true;
+                                    }
+                                }
+                                if(!flagNotification){
                                     notification.discoveredStressNotification(count
                                             , value, time.getTime());
-                                    flagNotification=true;
                                 }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
-                            if(!flagNotification){
-                                notification.discoveredStressNotification(count
-                                        , value, time.getTime());
-                            }
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
                     }
-                }
+                });
+                thread.start();
             }
         }
     }
 
     private void trainingIntent(Double value,Intent intent,Date time){
-        Double phasicValue= dataFilter.filterData(value);
+
+        double[] data= dataFilter.filterData(value);
+        if(data!=null) {
+            phasicValue = data[1];
+            tonicValue = data[0];
+        }
         if(value>100) {
-            if (phasicValue != null) {
+            if (phasicValue != -100) {
                 peaksCounter(intent, phasicValue, time.getTime());
             }
             if (time.getTime() - lastRecodingTonic > 30000) {
                 lastRecodingTonic = time.getTime();
-                dataBase.addTonic(time.getTime(), value);//Добавление тоники.
+                TonicInDayDB tonicInDayDB=new TonicInDayDB();
+                tonicInDayDB.addTonic(time.getTime(), value);//Добавление тоники.
                 intent.putExtra(BluetoothLeService.IS_TONIC, true);
             }
         }
-
+        intent.putExtra(BluetoothLeService.TONIC_DATA,tonicValue);
         intent.putExtra(BluetoothLeService.CLEAR_DATA,value);
         intent.putExtra(BluetoothLeService.PHASIC_DATA,phasicValue);
         intent.putExtra(BluetoothLeService.NOW_TIME,time.getTime());
-        Log.i("Value:",String.valueOf(value));
+        //Log.i("Value:",String.valueOf(value));
     }
 
     private void cleaningDB(Date time){
         SimpleDateFormat formatForDateNow = new SimpleDateFormat("HH:mm");
-        Log.i("Calendar",String.valueOf(formatForDateNow.format(time)));
-        if(formatForDateNow.format(time).equals("23:59")){
-            dataBase.addResultDayLine();
+        SimpleDateFormat secondFormat = new SimpleDateFormat("mm");
+        if (secondFormat.format(time).substring(1).equals("5")){
+            Calendar calendar=new GregorianCalendar();
+            Calendar resCalendar=new GregorianCalendar(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DATE));
+            PeaksInDayDB peaksInDayDB=new PeaksInDayDB();
+            TonicInDayDB tonicInDayDB=new TonicInDayDB();
+            TenMinuteInDayDB tenMinuteInDayDB=new TenMinuteInDayDB();
+            peaksInDayDB.clearPeaksDB(resCalendar.getTime().getTime());
+            tonicInDayDB.clearTonicDB(resCalendar.getTime().getTime());
+            tenMinuteInDayDB.clearTenMinuteTable(resCalendar.getTime().getTime());
         }
-        if(formatForDateNow.format(time).equals("00:00")){
-            dataBase.clearPeaksDB();
-            dataBase.clearTonicDB();
-            dataBase.clearTenMinuteTable();
+        if (formatForDateNow.format(time).equals("23:59")) {
+            if (new Date().getTime()-lastCleaningDB>100000) {
+                lastCleaningDB = new Date().getTime();
+                ResultInDayDB resultInDayDB = new ResultInDayDB();
+                resultInDayDB.addResultDayLine();
+            }
         }
+
     }
 
     private void peaksCounter(Intent intent,double value,long time){
@@ -329,7 +373,8 @@ public class BluetoothLeService extends Service {
                 Double max = Collections.max(peaksArray.values());//Амплитуда пика
                 ArrayList<Long> keys=new ArrayList(Arrays.asList(peaksArray.keySet().toArray()));
                 Long timePeaks=keys.get((int)(peaksArray.size()/2));
-                dataBase.addPeak(timePeaks,max);
+                PeaksInDayDB peaksInDayDB=new PeaksInDayDB();
+                peaksInDayDB.addPeak(timePeaks,max);
                 peaksFlag = false;
                 intent.putExtra(BluetoothLeService.IS_PEAKS, true);
             }else {

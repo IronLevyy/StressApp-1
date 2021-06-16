@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -18,7 +16,8 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.zemnuhov.stressapp.DataBase.DataBaseClass;
+import com.zemnuhov.stressapp.DataBase.SourcesDB;
+import com.zemnuhov.stressapp.DataBase.TenMinuteInDayDB;
 import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.R;
 import com.zemnuhov.stressapp.Settings.StatisticSettingActivity;
@@ -28,12 +27,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class StatisticLayout extends Fragment implements DataBaseClass.CallbackRefreshStatistic {
+public class StatisticLayout extends Fragment implements SourcesDB.CallbackRefreshStatistic {
 
     private PieChart pieChart;
     private ImageView settingButton;
     private HashMap<String,Integer> countSources;
-    private DataBaseClass dataBase;
+    private SourcesDB sourcesDB;
     private LinearLayout sourceLayout;
 
     ArrayList<Integer> colors = new ArrayList<>(
@@ -58,8 +57,8 @@ public class StatisticLayout extends Fragment implements DataBaseClass.CallbackR
         pieChart=view.findViewById(R.id.pieChart);
         settingButton=view.findViewById(R.id.setting_icon);
         sourceLayout=view.findViewById(R.id.source_layout_statistic);
-        dataBase = new DataBaseClass();
-        dataBase.registerCallback(this::refresh);
+        sourcesDB = new SourcesDB();
+        sourcesDB.registerCallback(this::refresh);
         settingButton.setOnClickListener(v -> {
             Intent intent=new Intent(ConstantAndHelp.getContext(),
                     StatisticSettingActivity.class);
@@ -70,7 +69,7 @@ public class StatisticLayout extends Fragment implements DataBaseClass.CallbackR
 
     private void statLayout(){
         List<PieEntry> entries = new ArrayList<>();
-        countSources=dataBase.readSourcesDB();
+        countSources= sourcesDB.readSourcesDB();
         ArrayList<Integer> pieChartColors=new ArrayList<>();
         Boolean isZero=false;
         Integer iter= 0;

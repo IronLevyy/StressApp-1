@@ -5,34 +5,32 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
+import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
+import com.zemnuhov.stressapp.ConstantAndHelp;
 import com.zemnuhov.stressapp.R;
+import com.zemnuhov.stressapp.ScanResurce.ScanFragment;
 
-import java.util.Calendar;
-import java.util.Date;
-
-public class GraphLayout extends Fragment {
+public class PhasicGraphLayout extends Fragment {
     private GraphView mainGraph;
+    private TonicGraphLayout swappingGraph;
     private final LineGraphSeries<DataPoint> seriesNormal = new LineGraphSeries<>(new DataPoint[]{});
     private final PointsGraphSeries<DataPoint> seriesPeaks = new PointsGraphSeries<>(new DataPoint[]{});
     private Integer i=0;
+    private ImageView swapGraphButton;
 
-    public static GraphLayout newInstance() {
+    public static PhasicGraphLayout newInstance() {
 
         Bundle args = new Bundle();
 
-        GraphLayout fragment = new GraphLayout();
+        PhasicGraphLayout fragment = new PhasicGraphLayout();
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,8 +38,14 @@ public class GraphLayout extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.main_graph_layout,container,false);
-        mainGraph=view.findViewById(R.id.graph_main);
+        View view=inflater.inflate(R.layout.main_phasic_graph_layout,container,false);
+        mainGraph=view.findViewById(R.id.phasic_graph_main);
+        swapGraphButton=view.findViewById(R.id.phasic_swap_button);
+        swapGraphButton.setOnClickListener(v -> {
+            getFragmentManager().beginTransaction().
+                    replace(R.id.graph_fragment_in_main, swappingGraph).
+                    commit();
+        });
         init();
         return view;
     }
@@ -78,11 +82,13 @@ public class GraphLayout extends Fragment {
     }
 
     public void addLineSeriesValue(Double value,Long time){
-        System.out.println(value);
         if(value>0.7){
-            seriesPeaks.appendData(new DataPoint(time,value),true,1000000);
+            seriesPeaks.appendData(new DataPoint(time,value),true,100000);
         }
-        seriesNormal.appendData(new DataPoint(time,value),true,1000000);
+        seriesNormal.appendData(new DataPoint(time,value),true,100000);
+    }
 
+    public void setSwappingGraph(TonicGraphLayout swappingGraph){
+        this.swappingGraph=swappingGraph;
     }
 }

@@ -13,8 +13,8 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.zemnuhov.stressapp.DataBase.DataBaseClass;
 import com.zemnuhov.stressapp.ConstantAndHelp;
+import com.zemnuhov.stressapp.DataBase.SourcesDB;
 import com.zemnuhov.stressapp.R;
 import com.zemnuhov.stressapp.Settings.StatisticSettingActivity;
 
@@ -41,6 +41,21 @@ public class NotificationClass {
         builder.setDefaults(Notification.DEFAULT_ALL);
         createNotificationChannel(FOREGROUND_CHANNEL_ID);
         return notification;
+    }
+
+    public void getDisconnectNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                ConstantAndHelp.getContext(), FRONT_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_self_improvement_24)
+                .setContentTitle("Произошёл разрыв с устройством")
+                .setContentText("Потеряно соединение с устройством, " +
+                        "зайдите в приложение, что бы переподключиться")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationManagerCompat notificationManagerCompat =
+                NotificationManagerCompat.from(ConstantAndHelp.getContext());
+
+        createNotificationChannel(FRONT_CHANNEL_ID);
+        notificationManagerCompat.notify(102, builder.build());
     }
 
     private void createNotificationChannel(String id) {
@@ -162,7 +177,7 @@ public class NotificationClass {
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(101);
             if(!intent.getStringExtra(EXTRA_NOTIFICATION_ID).equals("default")){
-                DataBaseClass dataBase=new DataBaseClass();
+                SourcesDB dataBase=new SourcesDB();
                 dataBase.addLineInStatistic(time,intent.getStringExtra(EXTRA_NOTIFICATION_ID)
                         ,peaksCount
                         ,tonicAvg);

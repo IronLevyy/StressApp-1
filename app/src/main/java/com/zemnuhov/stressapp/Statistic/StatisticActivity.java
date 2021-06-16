@@ -3,18 +3,16 @@ package com.zemnuhov.stressapp.Statistic;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.zemnuhov.stressapp.DataBase.DataBaseClass;
+import com.zemnuhov.stressapp.DataBase.TenMinuteInDayDB;
 import com.zemnuhov.stressapp.DataBase.TenMinuteObjectDB;
 import com.zemnuhov.stressapp.R;
 
@@ -22,7 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 public class StatisticActivity extends AppCompatActivity {
 
@@ -30,7 +27,7 @@ public class StatisticActivity extends AppCompatActivity {
     private BarGraphSeries<DataPoint> barSeries=new BarGraphSeries<>();
     private LineGraphSeries<DataPoint> lineSeries=new LineGraphSeries<>();
     private ArrayList<TenMinuteObjectDB> tenMinuteObjectDB;
-    private DataBaseClass dataBase;
+    private TenMinuteInDayDB dataBase;
     private LinearLayout scrollView;
     private Date dayBegin=new Date();
 
@@ -38,7 +35,7 @@ public class StatisticActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.statistic_activity);
-        dataBase=new DataBaseClass();
+        dataBase=new TenMinuteInDayDB();
         scrollView=findViewById(R.id.statistic_item_scroll);
         barChart=findViewById(R.id.statistic_bar_chart);
         tenMinuteObjectDB=dataBase.readTenMinuteTable();

@@ -11,7 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.zemnuhov.stressapp.DataBase.DataBaseClass;
+import com.zemnuhov.stressapp.DataBase.SourcesDB;
+import com.zemnuhov.stressapp.DataBase.TenMinuteInDayDB;
 import com.zemnuhov.stressapp.R;
 
 public class DialogSelectedSource extends DialogFragment {
@@ -47,8 +48,8 @@ public class DialogSelectedSource extends DialogFragment {
 
     private void clickListeners(Button buttonNo, Button buttonYes){
         buttonYes.setOnClickListener(v -> {
-            DataBaseClass dataBase=new DataBaseClass();
-            dataBase.addLineInStatistic(time,source,peaksCount,tonicAvg);
+            SourcesDB sourcesDB=new SourcesDB();
+            sourcesDB.addLineInStatistic(time,source,peaksCount,tonicAvg);
             dismiss();
         });
         buttonNo.setOnClickListener(v -> dismiss());

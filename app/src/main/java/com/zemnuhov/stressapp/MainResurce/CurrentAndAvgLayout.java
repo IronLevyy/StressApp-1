@@ -6,12 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.zemnuhov.stressapp.DataBase.DataBaseClass;
+import com.zemnuhov.stressapp.DataBase.TenMinuteInDayDB;
 import com.zemnuhov.stressapp.ConstantAndHelp;
+import com.zemnuhov.stressapp.DataBase.TonicInDayDB;
 import com.zemnuhov.stressapp.R;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class CurrentAndAvgLayout extends Fragment {
             new ArrayList<>(Arrays.asList("10M","1H","1D"));
     private final ArrayList<Long> timesRangesMillisecond=
             new ArrayList(Arrays.asList(600000L,3600000L,86400000L));
-    private DataBaseClass dataBase;
+    private TenMinuteInDayDB dataBase;
     private ScaleView scale;
 
     public static CurrentAndAvgLayout newInstance() {
@@ -57,7 +56,7 @@ public class CurrentAndAvgLayout extends Fragment {
         avgValue=view.findViewById(R.id.avg_value);
         timeRange=view.findViewById(R.id.time_range_tonic);
         timeRange.setText(timesRanges.get(0));
-        dataBase=new DataBaseClass();
+        dataBase=new TenMinuteInDayDB();
         scale=ScaleView.newInstance();
         ConstantAndHelp.getFragmentManager().beginTransaction().
                 replace(R.id.scale_fragment,scale).
@@ -65,10 +64,20 @@ public class CurrentAndAvgLayout extends Fragment {
     }
 
     public void refreshAvg(){
-        int position=timesRanges.indexOf(timeRange.getText().toString());
-        int avg= dataBase.readAvgTonic(timesRangesMillisecond.get(position));
-        avgValue.setText(String.valueOf(avg));
-
+        getActivity().runOnUiThread(()->{
+            int position=timesRanges.indexOf(timeRange.getText().toString());
+            TonicInDayDB tonicInDayDB=new TonicInDayDB();
+            Integer avg=null;
+            avg = tonicInDayDB.readAvgTonic(timesRangesMillisecond.get(position));
+            while (avg==null){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            avgValue.setText(String.valueOf(avg));
+        });
     }
 
     public void setCurrentValue(Double value){
